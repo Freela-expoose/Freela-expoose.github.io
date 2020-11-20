@@ -1,11 +1,17 @@
 import React from 'react';
-import './App.css';
+import CssBaseline from '@material-ui/core/CssBaseline';
+
+// import './App.css';
 
 import Routes from './routes';
 
 function App() {
   return (
-    <Routes/>
+    <React.Fragment>
+      <CssBaseline />
+      <Routes/>
+    </React.Fragment>
+    
   );
 }
 

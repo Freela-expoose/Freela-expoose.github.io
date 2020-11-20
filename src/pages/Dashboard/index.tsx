@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
 import { ProSidebar, MenuItem, Menu, SidebarHeader, SidebarContent, SidebarFooter } from 'react-pro-sidebar';
-import { Switch, Route, Link, useRouteMatch } from 'react-router-dom';
+import { Switch as SwitchRouter, Route, Link, useRouteMatch } from 'react-router-dom';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import Switch from '@material-ui/core/Switch';
 import { FiUsers, FiMenu, FiTag } from 'react-icons/fi';
 import { FaPowerOff } from 'react-icons/fa';
 
@@ -9,12 +11,21 @@ import UserTable from './pages/UserTable';
 import CouponTable from './pages/CouponTable';
 import 'react-pro-sidebar/dist/css/styles.css';
 import './styles.css';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 
 const Dashboard: React.FC = () => {
     const [collapsed, setCollapsed] = useState<boolean>(false);
     const divFooter = document.getElementById('footer');
     const buttonFooter = document.getElementById('footerButton');
+    const [darkState, setDarkState] = useState<boolean>(false);
+    const paletteType = darkState ? 'dark' : 'light';
+
+    const darkTheme = createMuiTheme({
+        palette: {
+            type: paletteType
+        }
+    });
     // In the child component, we get the url and path properties from the useRouteMatch hook.
     // We can use the useRouteMatch hook to return the path, and url . The path is for prefix the path prop of Route s, and url is for prefixing the to prop of Links of nested routes.
     const { path, url } = useRouteMatch();
@@ -26,6 +37,10 @@ const Dashboard: React.FC = () => {
     }else if(buttonFooter && divFooter) {
         divFooter.style.flexDirection="row";
         buttonFooter.style.marginTop="0";
+    }
+
+    function handleThemeChange() { 
+        setDarkState(!darkState);
     }
 
     return (
@@ -50,6 +65,13 @@ const Dashboard: React.FC = () => {
                             Tabela de cupons
                             <Link to={`${url}/tabela-de-cupons`}/>
                         </MenuItem>
+
+                        
+                    </Menu>
+                    <Menu>
+                        <MenuItem icon={<Switch checked={darkState} onChange={handleThemeChange} />} >
+                            DarkTheme
+                        </MenuItem>
                     </Menu>
                 </SidebarContent>
 
@@ -63,10 +85,12 @@ const Dashboard: React.FC = () => {
                 </SidebarFooter>
             </ProSidebar>
             
-            <Switch>
-                <Route component={UserTable} path={path} exact />
-                <Route component={CouponTable} path={`${path}/tabela-de-cupons`} />
-            </Switch>
+            <ThemeProvider theme={darkTheme}>
+                <SwitchRouter>
+                    <Route component={UserTable} path={path} exact />
+                    <Route component={CouponTable} path={`${path}/tabela-de-cupons`} />
+                </SwitchRouter>
+            </ThemeProvider>
         </div>
     );
 }
