@@ -9,8 +9,17 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Paper from '@material-ui/core/Paper';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
+import { MdDelete, MdAdd } from 'react-icons/md';
+import Modal from '@material-ui/core/Modal';
+import Backdrop from '@material-ui/core/Backdrop';
+import Fade from '@material-ui/core/Fade';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import Input from '@material-ui/core/Input';
+
+import './styles.css';
+import api from '../../../../services/api';
+
 
 
 interface Data {
@@ -58,6 +67,8 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 }
 
 type Order = 'asc' | 'desc';
+
+type ModalType = 'add' | 'delete';
 
 function getComparator<Key extends keyof any>(
   order: Order,
@@ -131,6 +142,9 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             </TableSortLabel>
           </TableCell>
         ))}
+        <TableCell align="right" >
+
+        </TableCell>
       </TableRow>
     </TableHead>
   );
@@ -164,8 +178,38 @@ const useStyles = makeStyles((theme: Theme) =>
       top: 20,
       width: 1,
     },
+
+    modal: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      outline: 0,
+      border: 0
+    },
+
+    container: {
+      backgroundColor: theme.palette.background.paper,
+      border: '2px solid #000',
+      boxShadow: theme.shadows[5],
+      padding: theme.spacing(2, 4, 3),
+      color: theme.palette.type === 'light' ? '#424242' : 'white'
+    },
+
+    button: {
+      marginRight: 24,
+    },
+
+    margin: {
+      marginBottom: 16
+    }
+
   }),
 );
+
+interface Points {
+  value: number;
+  expireDate: Date;
+}
 
 const UserTable: React.FC = () => {
   const classes = useStyles();
@@ -174,6 +218,10 @@ const UserTable: React.FC = () => {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [openModal, setOpenModal] = React.useState<boolean>(false);
+  const [currentRow, setCurrentRow] = React.useState<Data>({} as Data);
+  const [modalType, setModalType] = React.useState<ModalType>('add');
+  let points = 0;
 
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -191,9 +239,142 @@ const UserTable: React.FC = () => {
     setPage(0);
   };
 
-  const handleChangeDense = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDense(event.target.checked);
+  const handleChangeTextField = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const {value } = event.target;
+    event.preventDefault();
+
+    points= Number(value);
   };
+
+  // TODO: Modal confirmando o Delete
+  function handleModalDelete(rowData: Data){
+    setCurrentRow(rowData);
+    setModalType('delete');
+    setOpenModal(true);
+  }
+
+  function refreshPage() {
+    window.location.reload();
+  }
+
+  // TODO: Modal para adicionar pontos
+  function handleModalAddPoint(rowData: Data){
+    // alert('Adicionar!!!' + rowData.name);
+    setCurrentRow(rowData);
+    setModalType('add');
+    setOpenModal(true);
+  }
+
+  function handleDelete(){
+    // api.delete('admin/deleteUser', {
+    //   params: {
+    //     email: currentRow.email
+    //   }
+    // }).then((res) => {
+    //   alert('Deletado com sucesso!!!');
+    //   refreshPage();
+    // } ).catch(err => console.log(err.message));
+    alert('Deletado com sucesso!!!');
+    refreshPage();
+  }
+
+
+  function handleAddPoint(){
+    // api.patch('admin/addPoint', {
+    //   points,
+    //   email: currentRow.name
+    //   refreshPage();
+    // }).then(res => {
+    //   alert('Adicionado com sucesso!!!');
+    // }).catch(err => console.log(err.message));
+
+    alert('Adicionado com sucesso!!! '+ points);
+    refreshPage();
+  }
+
+  function CustomModal(){
+
+    if(modalType === 'add'){
+      return(
+        <Modal
+            disablePortal
+            disableEnforceFocus
+            disableAutoFocus
+            aria-labelledby="transition-modal-title"
+            aria-describedby="transition-modal-description"
+            className={classes.modal}
+            open={openModal}
+            onClose={() => setOpenModal(false)}
+            closeAfterTransition
+            BackdropComponent={Backdrop}
+            BackdropProps={{
+              timeout: 500,
+            }}
+          >
+            <Fade in={openModal}>
+              <div className={classes.container} id="modal">
+                <h2 >Adicionar ponto para {currentRow.name}</h2>
+                <form  noValidate autoComplete="off" >
+                  <div>
+                    <TextField 
+                      id="points"
+                      onChange={handleChangeTextField}
+                      name="value"
+                      variant="filled"
+                      label="Pontos"
+                      className={classes.margin}
+                      defaultValue={points}
+                      required={true}
+                      type="number"
+                      fullWidth
+                      color="secondary"
+                    />
+                    <Button variant="contained" onClick={handleAddPoint} color="primary">
+                      Enviar
+                    </Button>
+                  </div>
+                </form>
+              </div>
+            </Fade>
+        </Modal>
+      );
+    } else {
+      return(
+        <Modal
+            disablePortal
+            disableEnforceFocus
+            disableAutoFocus
+            aria-labelledby="transition-modal-title"
+            aria-describedby="transition-modal-description"
+            className={classes.modal}
+            open={openModal}
+            onClose={() => setOpenModal(false)}
+            closeAfterTransition
+            BackdropComponent={Backdrop}
+            BackdropProps={{
+              timeout: 500,
+            }}
+          >
+            <Fade in={openModal}>
+              <div className={classes.container}>
+                <h2 id="transition-modal-title">Deseja continuar</h2>
+                <p id="transition-modal-description">Quer mesmo deletar {currentRow.name}?</p>
+
+                <div id="button-group">
+                    <Button variant="contained" color="primary" className={classes.button} onClick={handleDelete} type="submit">
+                      Sim
+                    </Button>
+
+                    <Button variant="contained" color="primary" onClick={() => setOpenModal(false)}>
+                      Não
+                    </Button>
+                </div>
+              </div>
+            </Fade>
+        </Modal>
+      );
+    }
+  }
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
@@ -232,6 +413,23 @@ const UserTable: React.FC = () => {
                       <TableCell align="right">{row.fat}</TableCell>
                       <TableCell align="right">{row.carbs}</TableCell>
                       <TableCell align="right">{row.protein}</TableCell>
+                      <TableCell align="right" >
+                        {/* <IconButton  color="primary"  arial-label="delete" size="medium">
+                          <MdAdd/>
+                        </IconButton>
+
+                        <IconButton  color="secondary" arial-label="delete" size="medium">
+                          <MdDelete/>
+                        </IconButton> */}
+
+                        <button className="custom-button blue" onClick={() => handleModalAddPoint(row)}>
+                          <MdAdd/>
+                        </button>
+                        
+                        <button className="custom-button red" onClick={() => handleModalDelete(row)}>
+                          <MdDelete/>
+                        </button>
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -253,6 +451,9 @@ const UserTable: React.FC = () => {
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
       </Paper>
+
+      <CustomModal/>
+      
     </div>
   );
 }

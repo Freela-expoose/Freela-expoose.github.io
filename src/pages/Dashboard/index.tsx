@@ -11,7 +11,6 @@ import UserTable from './pages/UserTable';
 import CouponTable from './pages/CouponTable';
 import 'react-pro-sidebar/dist/css/styles.css';
 import './styles.css';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 
 const Dashboard: React.FC = () => {

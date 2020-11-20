@@ -6,3 +6,40 @@
     /* align-items: center; */
     padding: 8px 24px;
 }
+
+.custom-button {
+    border: 0;
+    color: #fff;
+    font-size: 24px;
+    padding: 2px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 4px;
+    box-shadow: 1.1px 1.2px 2px 0 rgba(54, 54, 54, 0.459);
+    transition: 0.2s;
+    outline-style: none;
+}
+
+.blue {
+    background: rgb(0, 140, 255);
+}
+
+.blue:hover {
+    background: rgb(0, 114, 207);
+}
+
+.red {
+    background: rgb(221, 33, 0);
+}
+
+.red:hover {
+    background: rgb(196, 29, 0);
+}
+
+#button-group {
+    display: flex;
+    margin-top: 24px;
+}
