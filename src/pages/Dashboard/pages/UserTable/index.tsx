@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -15,7 +15,6 @@ import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import Input from '@material-ui/core/Input';
 
 import './styles.css';
 import api from '../../../../services/api';
@@ -29,6 +28,13 @@ interface Data {
   name: string;
   protein: number;
 }
+
+// interface Data {
+//   id: number;
+//   name: string;
+//   email: string;
+//   points: number;
+// }
 
 function createData(
   name: string,
@@ -96,6 +102,7 @@ interface HeadCell {
   numeric: boolean;
 }
 
+
 const headCells: HeadCell[] = [
   { id: 'name', numeric: false, disablePadding: false, label: 'Dessert (100g serving)' },
   { id: 'calories', numeric: true, disablePadding: false, label: 'Calories' },
@@ -103,6 +110,13 @@ const headCells: HeadCell[] = [
   { id: 'carbs', numeric: true, disablePadding: false, label: 'Carbs (g)' },
   { id: 'protein', numeric: true, disablePadding: false, label: 'Protein (g)' },
 ];
+
+// const headCells: HeadCell[] = [
+//   { id: 'name', numeric: false, disablePadding: false, label: 'Nome' },
+//   { id: 'id', numeric: true, disablePadding: false, label: 'ID' },
+//   { id: 'email', numeric: true, disablePadding: false, label: 'Email' },
+//   { id: 'points', numeric: true, disablePadding: false, label: 'Pontos' },
+// ];
 
 interface EnhancedTableProps {
   classes: ReturnType<typeof useStyles>;
@@ -155,7 +169,8 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       width: '100%',
-      backgroundColor: theme.palette.background.default
+      backgroundColor: theme.palette.background.default,
+      color: theme.palette.type === 'light' ? '#424242' : 'white'
     },
     paper: {
       maxWidth: '70%',
@@ -192,7 +207,6 @@ const useStyles = makeStyles((theme: Theme) =>
       border: '2px solid #000',
       boxShadow: theme.shadows[5],
       padding: theme.spacing(2, 4, 3),
-      color: theme.palette.type === 'light' ? '#424242' : 'white'
     },
 
     button: {
@@ -206,10 +220,6 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-interface Points {
-  value: number;
-  expireDate: Date;
-}
 
 const UserTable: React.FC = () => {
   const classes = useStyles();
@@ -221,7 +231,16 @@ const UserTable: React.FC = () => {
   const [openModal, setOpenModal] = React.useState<boolean>(false);
   const [currentRow, setCurrentRow] = React.useState<Data>({} as Data);
   const [modalType, setModalType] = React.useState<ModalType>('add');
+  // const [row, setRow] = React.useState<Data[]>([] as Data[]);
   let points = 0;
+
+
+  // TODO: Carregar todos os dados da lista
+  // useEffect(() => {
+  //   api.get('admin/getUserList').then(res => {
+  //     setRow(res.data);
+  //   }).catch(err => console.log(err.message));
+  // }, []);
 
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -328,6 +347,9 @@ const UserTable: React.FC = () => {
                       type="number"
                       fullWidth
                       color="secondary"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
                     />
                     <Button variant="contained" onClick={handleAddPoint} color="primary">
                       Enviar
@@ -380,6 +402,7 @@ const UserTable: React.FC = () => {
 
   return (
     <div className={classes.root}>
+      <h1 id="title">Tabela dos usuários</h1>
       <Paper className={classes.paper} >
         <TableContainer>
           <Table

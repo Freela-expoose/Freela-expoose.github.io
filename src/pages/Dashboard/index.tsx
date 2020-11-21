@@ -20,6 +20,21 @@ const Dashboard: React.FC = () => {
     const [darkState, setDarkState] = useState<boolean>(false);
     const paletteType = darkState ? 'dark' : 'light';
 
+    // Verifica se existe dark-theme no localStorage, se sim carregar o estado com ele
+    React.useEffect(() => {
+        const darkLocal = localStorage.getItem('@dark-theme');
+        if (darkLocal){
+            // setDarkState(Boolean(darkLocal));
+            setDarkState(darkLocal === 'true' ? true : false);
+            // console.log(darkLocal);
+        }
+    }, []);
+
+    // Toda vez que o darkState é alterado ele guarda essa mudança do localStorage
+    React.useEffect(() => {
+        localStorage.setItem('@dark-theme', String(darkState));
+    }, [darkState]);
+
     const darkTheme = createMuiTheme({
         palette: {
             type: paletteType
@@ -69,7 +84,7 @@ const Dashboard: React.FC = () => {
                     </Menu>
                     <Menu>
                         <MenuItem icon={<Switch checked={darkState} onChange={handleThemeChange} />} >
-                            DarkTheme
+                            Tema escuro
                         </MenuItem>
                     </Menu>
                 </SidebarContent>
