@@ -1,6 +1,9 @@
 import React, {ChangeEvent, FormEvent, useState} from 'react';
 import { useHistory } from 'react-router-dom';
+
+
 import './styles.css';
+import api from '../../services/api';
 
 const Login: React.FC = () => {
     const [formData, setFormData] = useState({
@@ -13,7 +16,17 @@ const Login: React.FC = () => {
     async function handleSubmit(event: FormEvent){
         event.preventDefault();
         // TODO: Context API Logic
+        // api.post('user/login', formData).then(res => {
+        //     const { user, token } = res.data;
+        //     localStorage.setItem('@currentUser', JSON.stringify(user));
+        //     localStorage.setItem('@userToken', token);
+
+        //     api.defaults.headers.Authorization = `Bearer ${token}`;
+        //     alert("Logado com sucesso!!!");
+        //     history.push('/dashboard');
+        // }).catch(err => console.log(err.message));
         history.push('/dashboard');
+        
     }
 
     async function handleInputChange(event: ChangeEvent<HTMLInputElement>) {

@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { ProSidebar, MenuItem, Menu, SidebarHeader, SidebarContent, SidebarFooter } from 'react-pro-sidebar';
-import { Switch as SwitchRouter, Route, Link, useRouteMatch } from 'react-router-dom';
+import { Switch as SwitchRouter, Route, Link, useRouteMatch, useHistory } from 'react-router-dom';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 import { FiUsers, FiMenu, FiTag } from 'react-icons/fi';
@@ -19,6 +19,7 @@ const Dashboard: React.FC = () => {
     const buttonFooter = document.getElementById('footerButton');
     const [darkState, setDarkState] = useState<boolean>(false);
     const paletteType = darkState ? 'dark' : 'light';
+    const history = useHistory();
 
     // Verifica se existe dark-theme no localStorage, se sim carregar o estado com ele
     React.useEffect(() => {
@@ -57,6 +58,12 @@ const Dashboard: React.FC = () => {
         setDarkState(!darkState);
     }
 
+    function handleLogOut(){
+        localStorage.removeItem('@currentUser');
+        localStorage.removeItem('@userToken');
+        history.push('/');
+    }
+
     return (
         <div id="page-sidebar">
             <ProSidebar collapsed={collapsed} >
@@ -92,7 +99,7 @@ const Dashboard: React.FC = () => {
                 <SidebarFooter >
                     <div id="footer">
                         {copy} Expose 
-                        <button id="footerButton">
+                        <button id="footerButton" onClick={handleLogOut}>
                             <FaPowerOff />
                         </button>
                     </div>
