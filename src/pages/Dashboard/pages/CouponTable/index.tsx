@@ -1,25 +1,29 @@
-import React, {useEffect} from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
-import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Paper from '@material-ui/core/Paper';
-import { MdDelete, MdAdd } from 'react-icons/md';
-import Modal from '@material-ui/core/Modal';
-import Backdrop from '@material-ui/core/Backdrop';
-import Fade from '@material-ui/core/Fade';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
+import React, { useEffect } from "react";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TablePagination from "@material-ui/core/TablePagination";
+import TableRow from "@material-ui/core/TableRow";
+import TableSortLabel from "@material-ui/core/TableSortLabel";
+import Paper from "@material-ui/core/Paper";
+import { MdDelete, MdAdd, MdSearch } from "react-icons/md";
+import Modal from "@material-ui/core/Modal";
+import Backdrop from "@material-ui/core/Backdrop";
+import Fade from "@material-ui/core/Fade";
+import Button from "@material-ui/core/Button";
+import TextField from "@material-ui/core/TextField";
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import InputLabel from '@material-ui/core/InputLabel';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import IconButton from '@material-ui/core/IconButton'
 
-import './styles.css';
-import api from '../../../../services/api';
 
-
+import "./styles.css";
+import api from "../../../../services/api";
 
 interface Data {
   calories: number;
@@ -44,25 +48,25 @@ function createData(
   calories: number,
   fat: number,
   carbs: number,
-  protein: number,
+  protein: number
 ): Data {
   return { name, calories, fat, carbs, protein };
 }
 
 const rows = [
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Donut', 452, 25.0, 51, 4.9),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-  createData('Honeycomb', 408, 3.2, 87, 6.5),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Jelly Bean', 375, 0.0, 94, 0.0),
-  createData('KitKat', 518, 26.0, 65, 7.0),
-  createData('Lollipop', 392, 0.2, 98, 0.0),
-  createData('Marshmallow', 318, 0, 81, 2.0),
-  createData('Nougat', 360, 19.0, 9, 37.0),
-  createData('Oreo', 437, 18.0, 63, 4.0),
+  createData("Cupcake", 305, 3.7, 67, 4.3),
+  createData("Donut", 452, 25.0, 51, 4.9),
+  createData("Eclair", 262, 16.0, 24, 6.0),
+  createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
+  createData("Gingerbread", 356, 16.0, 49, 3.9),
+  createData("Honeycomb", 408, 3.2, 87, 6.5),
+  createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
+  createData("Jelly Bean", 375, 0.0, 94, 0.0),
+  createData("KitKat", 518, 26.0, 65, 7.0),
+  createData("Lollipop", 392, 0.2, 98, 0.0),
+  createData("Marshmallow", 318, 0, 81, 2.0),
+  createData("Nougat", 360, 19.0, 9, 37.0),
+  createData("Oreo", 437, 18.0, 63, 4.0),
 ];
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -75,15 +79,18 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   return 0;
 }
 
-type Order = 'asc' | 'desc';
+type Order = "asc" | "desc";
 
-type ModalType = 'add' | 'delete';
+type ModalType = "add" | "delete";
 
 function getComparator<Key extends keyof any>(
   order: Order,
-  orderBy: Key,
-): (a: { [key in Key]: number | string }, b: { [key in Key]: number | string }) => number {
-  return order === 'desc'
+  orderBy: Key
+): (
+  a: { [key in Key]: number | string },
+  b: { [key in Key]: number | string }
+) => number {
+  return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
@@ -105,13 +112,17 @@ interface HeadCell {
   numeric: boolean;
 }
 
-
 const headCells: HeadCell[] = [
-  { id: 'name', numeric: false, disablePadding: false, label: 'Dessert (100g serving)' },
-  { id: 'calories', numeric: true, disablePadding: false, label: 'Calories' },
-  { id: 'fat', numeric: true, disablePadding: false, label: 'Fat (g)' },
-  { id: 'carbs', numeric: true, disablePadding: false, label: 'Carbs (g)' },
-  { id: 'protein', numeric: true, disablePadding: false, label: 'Protein (g)' },
+  {
+    id: "name",
+    numeric: false,
+    disablePadding: false,
+    label: "Dessert (100g serving)",
+  },
+  { id: "calories", numeric: true, disablePadding: false, label: "Calories" },
+  { id: "fat", numeric: true, disablePadding: false, label: "Fat (g)" },
+  { id: "carbs", numeric: true, disablePadding: false, label: "Carbs (g)" },
+  { id: "protein", numeric: true, disablePadding: false, label: "Protein (g)" },
 ];
 
 // const headCells: HeadCell[] = [
@@ -124,7 +135,10 @@ const headCells: HeadCell[] = [
 
 interface EnhancedTableProps {
   classes: ReturnType<typeof useStyles>;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Data) => void;
+  onRequestSort: (
+    event: React.MouseEvent<unknown>,
+    property: keyof Data
+  ) => void;
   order: Order;
   orderBy: string;
   rowCount: number;
@@ -132,198 +146,37 @@ interface EnhancedTableProps {
 
 function EnhancedTableHead(props: EnhancedTableProps) {
   const { classes, order, orderBy, onRequestSort } = props;
-  const createSortHandler = (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
+  const [formData, setFormData] = React.useState<Data>({} as Data);
+  const [openModal, setOpenModal] = React.useState<boolean>(false);
+  let price = 0;
+  const createSortHandler = (property: keyof Data) => (
+    event: React.MouseEvent<unknown>
+  ) => {
     onRequestSort(event, property);
   };
 
-  return (
-    <TableHead>
-      <TableRow>
-        {headCells.map((headCell) => (
-          <TableCell
-            key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
-            padding={headCell.disablePadding ? 'none' : 'default'}
-            sortDirection={orderBy === headCell.id ? order : false}
-          >
-            <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={createSortHandler(headCell.id)}
-            >
-              {headCell.label}
-              {orderBy === headCell.id ? (
-                <span className={classes.visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </span>
-              ) : null}
-            </TableSortLabel>
-          </TableCell>
-        ))}
-        <TableCell align="right" >
-
-        </TableCell>
-      </TableRow>
-    </TableHead>
-  );
-}
-
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      width: '100%',
-      backgroundColor: theme.palette.background.default,
-      color: theme.palette.type === 'light' ? '#424242' : 'white'
-    },
-    paper: {
-      maxWidth: '70%',
-      margin: 'auto',
-      marginBottom: theme.spacing(2),
-      marginTop: 80,
-    },
-    table: {
-      minWidth: 750,
-      
-    },
-    visuallyHidden: {
-      border: 0,
-      clip: 'rect(0 0 0 0)',
-      height: 1,
-      margin: -1,
-      overflow: 'hidden',
-      padding: 0,
-      position: 'absolute',
-      top: 20,
-      width: 1,
-    },
-
-    modal: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      outline: 0,
-      border: 0
-    },
-
-    container: {
-      backgroundColor: theme.palette.background.paper,
-      border: '2px solid #000',
-      boxShadow: theme.shadows[5],
-      padding: theme.spacing(2, 4, 3),
-    },
-
-    button: {
-      marginRight: 24,
-    },
-
-    margin: {
-      marginBottom: 16
-    }
-
-  }),
-);
-
-
-const CouponTable: React.FC = () => {
-  const classes = useStyles();
-  const [order, setOrder] = React.useState<Order>('asc');
-  const [orderBy, setOrderBy] = React.useState<keyof Data>('calories');
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [openModal, setOpenModal] = React.useState<boolean>(false);
-  const [currentRow, setCurrentRow] = React.useState<Data>({} as Data);
-  const [modalType, setModalType] = React.useState<ModalType>('add');
-  // const [row, setRow] = React.useState<Data[]>([] as Data[]);
-  const [formData, setFormData] = React.useState<Data>({} as Data);
-  let price = 0;
-
-
-
-  // TODO: Carregar todos os dados da lista
-  // useEffect(() => {
-  //   api.get('admin/getCouponList').then(res => {
-  //     setRow(res.data);
-  //   }).catch(err => console.log(err.message));
-  // }, []);
-
-  const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
-  };
-
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const handleChangeTextField = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const {value } = event.target;
-    event.preventDefault();
-
-    price= Number(value);
-  };
-
-  const handleChangeFormData = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } =  event.target;
-
-    setFormData({
-        ...formData,
-        [name]: value
-    });
-  };
-
-  // TODO: Modal confirmando o Delete
-  function handleModalDelete(rowData: Data){
-    setCurrentRow(rowData);
-    setModalType('delete');
-    setOpenModal(true);
-  }
-
-  function refreshPage() {
-    window.location.reload();
-  }
-
-  // TODO: Modal para adicionar pontos
-  function handleModalAddCoupon(rowData: Data){
+  function handleModalAddCoupon() {
     // alert('Adicionar!!!' + rowData.name);
-    setCurrentRow(rowData);
-    setModalType('add');
     setOpenModal(true);
   }
 
-  function handleDelete(){
-    // api.delete('admin/deleteUser', {
-    //   params: {
-    //     email: currentRow.email
-    //   }
-    // }).then((res) => {
-    //   alert('Deletado com sucesso!!!');
-    //   refreshPage();
-    // } ).catch(err => console.log(err.message));
-    alert('Deletado com sucesso!!!');
-    refreshPage();
-  }
+  const handleChangeFormData = (event: React.ChangeEvent<{name?: string | undefined, value: unknown}>) => {
+    const { name, value } = event.target;
 
-
-  function handleAddPoint(){
-    // api.patch('admin/addPoint', {
-    //   price,
-    //   email: currentRow.name
-    //   refreshPage();
-    // }).then(res => {
-    //   alert('Adicionado com sucesso!!!');
-    // }).catch(err => console.log(err.message));
-
-    alert('Adicionado com sucesso!!! '+ price);
-    refreshPage();
-  }
+    if(name && value){
+      if(name === "isActive"){
+        // setFormData({
+        //   ...formData,
+        //   [name]: value === 1 ? true : false,
+        // });
+      }else {
+        setFormData({
+          ...formData,
+          [name]: value,
+        });
+      }
+    }
+  };
 
   function handleSubmitAddFormData() {
     //   setFormData({
@@ -332,11 +185,348 @@ const CouponTable: React.FC = () => {
     //   });
     // api.post('admin/addCoupon', formData).then(res => {
     //     alert("Adicionado com sucesso!!!");
+    //     window.location.reload();
     // }).catch(err => console.log(err.message));
   }
 
+  return (
+    <>
+      <TableHead>
+        <TableRow>
+          {headCells.map((headCell) => (
+            <TableCell
+              key={headCell.id}
+              align={headCell.numeric ? "right" : "left"}
+              padding={headCell.disablePadding ? "none" : "default"}
+              sortDirection={orderBy === headCell.id ? order : false}
+            >
+              <TableSortLabel
+                active={orderBy === headCell.id}
+                direction={orderBy === headCell.id ? order : "asc"}
+                onClick={createSortHandler(headCell.id)}
+              >
+                {headCell.label}
+                {orderBy === headCell.id ? (
+                  <span className={classes.visuallyHidden}>
+                    {order === "desc"
+                      ? "sorted descending"
+                      : "sorted ascending"}
+                  </span>
+                ) : null}
+              </TableSortLabel>
+            </TableCell>
+          ))}
+          <TableCell align="right">
+            {/* <button
+              className="custom-button blue"
+              onClick={() => handleModalAddCoupon()}
+            >
+              <MdAdd />
+            </button> */}
+            <Button
+              startIcon={<MdAdd />}
+              color="primary"
+              variant="contained"
+              onClick={() => handleModalAddCoupon()}
+            >
+              Adicionar cupom
+            </Button>
+          </TableCell>
+        </TableRow>
+      </TableHead>
+
+      <Modal
+        disablePortal
+        disableEnforceFocus
+        disableAutoFocus
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        className={classes.modal}
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+        <Fade in={openModal}>
+          <div className={classes.container} id="modal">
+            <h2>Adicionar ponto para</h2>
+            <form noValidate autoComplete="off">
+              {/* <Grid container justify="center"> */}
+              <div id="modal-form">
+                <div id="div-form">
+                
+                  <div style={{display: 'flex'}}>
+                    <TextField
+                      id="title"
+                      onChange={handleChangeFormData}
+                      name="title"
+                      variant="filled"
+                      label="Título"
+                      className={classes.margin}
+                      defaultValue={formData.name}
+                      required
+                      color="secondary"
+                    />
+
+            
+  
+                    <div id="select-div">
+                      <InputLabel id="select-label">Estado</InputLabel>
+                      <Select
+                        labelId = "select-label"
+                        id="isActive"
+                        value={1}
+                        onChange={handleChangeFormData}
+                        name="isActive"
+                        className={classes.margin}
+                        color="secondary"
+                        fullWidth
+                        style={{width: '100%'}}
+                      >
+                        <MenuItem value={1} >Ativado</MenuItem>
+                        <MenuItem value={0} >Desativado</MenuItem>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <TextField
+                      id="expireDate"
+                      onChange={handleChangeFormData}
+                      name="expireDate"
+                      label="Data de vencimento"
+                      type="date"
+                      className={classes.margin}
+                      // defaultValue={formData.name}
+                      required
+                      color="secondary"
+                      defaultValue="24-05-2017"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}             
+                    />
+
+                    <TextField
+                      id="price"
+                      onChange={handleChangeFormData}
+                      name="price"
+                      variant="filled"
+                      label="Preço"
+                      className={classes.margin}
+                      defaultValue={price}
+                      required
+                      type="number"
+                      color="secondary"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                    />
+                  </div>
+
+                  <TextField
+                    id="description"
+                    onChange={handleChangeFormData}
+                    name="description"
+                    variant="filled"
+                    label="Descrição"
+                    className={classes.margin}
+                    // defaultValue={formData.name}
+                    required
+                    color="secondary"
+                    fullWidth
+                    multiline
+                  />
+                
+                </div>
+
+                <div id="modal-upload-images">
+                  <img
+                    src="https://exposeestetica.com.br/wp-content/uploads/2018/12/depilacao-a-laser-milesman.jpg"
+                    alt="Foto"
+                    width="256"
+                  />
+                  <div>
+                    <Button variant="contained" component="label" fullWidth>
+                      Carregar imagem
+                      <input
+                        id="photo"
+                        type="file"
+                        hidden
+                        onChange={handleChangeFormData}
+                        name="photo"
+                      />
+                    </Button>
+                  </div>
+                </div>
+              {/* </Grid> */}
+              </div>
+              <Button
+                variant="contained"
+                onClick={handleSubmitAddFormData}
+                color="primary"
+                style={{marginTop: 24}}
+              >
+                Enviar
+              </Button>
+              
+            </form>
+          </div>
+        </Fade>
+      </Modal>
+    </>
+  );
+}
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      width: "100%",
+      backgroundColor: theme.palette.background.default,
+      color: theme.palette.type === "light" ? "#424242" : "white",
+    },
+    paper: {
+      maxWidth: "70%",
+      margin: "auto",
+      marginBottom: theme.spacing(2),
+      marginTop: 80,
+    },
+    table: {
+      minWidth: 750,
+    },
+    visuallyHidden: {
+      border: 0,
+      clip: "rect(0 0 0 0)",
+      height: 1,
+      margin: -1,
+      overflow: "hidden",
+      padding: 0,
+      position: "absolute",
+      top: 20,
+      width: 1,
+    },
+
+    modal: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      outline: 0,
+      border: 0,
+    },
+
+    container: {
+      backgroundColor: theme.palette.background.paper,
+      border: 0,
+      boxShadow: theme.shadows[5],
+      padding: theme.spacing(2, 4, 3),
+      "& .MuiTextField-root": {
+        margin: theme.spacing(1),
+        // width: '25ch',
+      },
+      borderRadius: 8,
+    },
+
+    button: {
+      marginRight: 24,
+    },
+
+    margin: {
+      // display: 'inline-flex'
+    },
+
+    marginSearch: {
+      margin: 8
+    }
+  })
+);
+
+const CouponTable: React.FC = () => {
+  const classes = useStyles();
+  const [order, setOrder] = React.useState<Order>("asc");
+  const [orderBy, setOrderBy] = React.useState<keyof Data>("calories");
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [openModal, setOpenModal] = React.useState<boolean>(false);
+  const [currentRow, setCurrentRow] = React.useState<Data>({} as Data);
+  const [modalType, setModalType] = React.useState<ModalType>("add");
+  // const [row, setRow] = React.useState<Data[]>([] as Data[]);
+  const [formData, setFormData] = React.useState<Data>({} as Data);
+  const [search, setSearch] = React.useState<string>('');
+  let price = 0;
+
+  // TODO: Carregar todos os dados da lista
+  // useEffect(() => {
+  //   api.get('admin/getCouponList').then(res => {
+  //     setRow(res.data);
+  //   }).catch(err => console.log(err.message));
+  // }, []);
+
+  const handleRequestSort = (
+    event: React.MouseEvent<unknown>,
+    property: keyof Data
+  ) => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleChangeTextField = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { value } = event.target;
+    event.preventDefault();
+
+    price = Number(value);
+  };
+
+  const handleChangeFormData = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  // TODO: Modal confirmando o Delete
+  function handleModalDelete(rowData: Data) {
+    setCurrentRow(rowData);
+    setModalType("delete");
+    setOpenModal(true);
+  }
+
+  function refreshPage() {
+    window.location.reload();
+  }
+
+  function handleDelete() {
+    // api.delete('admin/deleteUser', {
+    //   params: {
+    //     email: currentRow.email
+    //   }
+    // }).then((res) => {
+    //   alert('Deletado com sucesso!!!');
+    //   refreshPage();
+    // } ).catch(err => console.log(err.message));
+    alert("Deletado com sucesso!!!");
+    refreshPage();
+  }
+
   function handleSubmitUpFormData() {
-      //   setFormData({
+    //   setFormData({
     //       ...formData,
     //       price
     //   });
@@ -345,99 +535,153 @@ const CouponTable: React.FC = () => {
     // }).catch(err => console.log(err.message));
   }
 
-  function CustomModal(){
+  function handleSearchChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const { value } = event.target;
 
-    if(modalType === 'add'){
-      return(
+    setSearch(value);
+    // handleSearchClick();
+  }
+
+  function handleSearchClick() {
+    // if(search !== ""){
+    //   api.get('admin/getCouponList', {
+    //     params: {
+    //       value: search
+    //     }
+    //   }).then(res => {
+    //     setRow(res.data);
+    //   }).catch(err => console.log(err.message));
+    // }
+    alert(search);
+  }
+
+  function CustomModal() {
+    if (modalType === "add") {
+      return (
         <Modal
-            disablePortal
-            disableEnforceFocus
-            disableAutoFocus
-            aria-labelledby="transition-modal-title"
-            aria-describedby="transition-modal-description"
-            className={classes.modal}
-            open={openModal}
-            onClose={() => setOpenModal(false)}
-            closeAfterTransition
-            BackdropComponent={Backdrop}
-            BackdropProps={{
-              timeout: 500,
-            }}
-          >
-            <Fade in={openModal}>
-              <div className={classes.container} id="modal">
-                <h2 >Adicionar ponto para {currentRow.name}</h2>
-                <form  noValidate autoComplete="off" >
-                  <div>
-                    <TextField 
-                      id="price"
-                      onChange={handleChangeTextField}
-                      name="value"
-                      variant="filled"
-                      label="Pontos"
-                      className={classes.margin}
-                      defaultValue={price}
-                      required={true}
-                      type="number"
-                      fullWidth
-                      color="secondary"
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                    />
-                    <Button variant="contained" onClick={handleAddPoint} color="primary">
-                      Enviar
-                    </Button>
-                  </div>
-                </form>
-              </div>
-            </Fade>
+          disablePortal
+          disableEnforceFocus
+          disableAutoFocus
+          aria-labelledby="transition-modal-title"
+          aria-describedby="transition-modal-description"
+          className={classes.modal}
+          open={openModal}
+          onClose={() => setOpenModal(false)}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 500,
+          }}
+        >
+          <Fade in={openModal}>
+            <div className={classes.container} id="modal">
+              <h2>Adicionar ponto para {currentRow.name}</h2>
+              <form noValidate autoComplete="off">
+                <div>
+                  <TextField
+                    id="price"
+                    onChange={handleChangeTextField}
+                    name="price"
+                    variant="filled"
+                    label="Pontos"
+                    className={classes.margin}
+                    defaultValue={price}
+                    required={true}
+                    type="number"
+                    fullWidth
+                    color="secondary"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+                  <Button variant="contained" color="primary">
+                    Enviar
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </Fade>
         </Modal>
       );
     } else {
-      return(
+      return (
         <Modal
-            disablePortal
-            disableEnforceFocus
-            disableAutoFocus
-            aria-labelledby="transition-modal-title"
-            aria-describedby="transition-modal-description"
-            className={classes.modal}
-            open={openModal}
-            onClose={() => setOpenModal(false)}
-            closeAfterTransition
-            BackdropComponent={Backdrop}
-            BackdropProps={{
-              timeout: 500,
-            }}
-          >
-            <Fade in={openModal}>
-              <div className={classes.container}>
-                <h2 id="transition-modal-title">Deseja continuar</h2>
-                <p id="transition-modal-description">Quer mesmo deletar {currentRow.name}?</p>
+          disablePortal
+          disableEnforceFocus
+          disableAutoFocus
+          aria-labelledby="transition-modal-title"
+          aria-describedby="transition-modal-description"
+          className={classes.modal}
+          open={openModal}
+          onClose={() => setOpenModal(false)}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 500,
+          }}
+        >
+          <Fade in={openModal}>
+            <div className={classes.container}>
+              <h2 id="transition-modal-title">Deseja continuar</h2>
+              <p id="transition-modal-description">
+                Quer mesmo deletar {currentRow.name}?
+              </p>
 
-                <div id="button-group">
-                    <Button variant="contained" color="primary" className={classes.button} onClick={handleDelete} type="submit">
-                      Sim
-                    </Button>
+              <div id="button-group">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.button}
+                  onClick={handleDelete}
+                  type="submit"
+                >
+                  Sim
+                </Button>
 
-                    <Button variant="contained" color="primary" onClick={() => setOpenModal(false)}>
-                      Não
-                    </Button>
-                </div>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setOpenModal(false)}
+                >
+                  Não
+                </Button>
               </div>
-            </Fade>
+            </div>
+          </Fade>
         </Modal>
       );
     }
   }
 
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+  const emptyRows =
+    rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
   return (
     <div className={classes.root}>
-      <h1 id="title">Tabela dos usuários</h1>
-      <Paper className={classes.paper} >
+      <h1 id="titlePage">Tabela de cupons</h1>
+
+      
+
+      <Paper className={classes.paper}>
+        <TextField
+          id="search-input"
+          label="Pesquisar"
+          variant="filled"
+          color="secondary"
+          onChange={handleSearchChange}
+          value={search}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={handleSearchClick}>
+                  <MdSearch/>
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+          className={classes.marginSearch}
+        />
+
         <TableContainer>
           <Table
             className={classes.table}
@@ -455,13 +699,8 @@ const CouponTable: React.FC = () => {
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => {
-
                   return (
-                    <TableRow
-                      hover
-                      tabIndex={-1}
-                      key={row.name}
-                    >
+                    <TableRow hover tabIndex={-1} key={row.name}>
                       <TableCell component="th" scope="row">
                         {row.name}
                       </TableCell>
@@ -469,21 +708,12 @@ const CouponTable: React.FC = () => {
                       <TableCell align="right">{row.fat}</TableCell>
                       <TableCell align="right">{row.carbs}</TableCell>
                       <TableCell align="right">{row.protein}</TableCell>
-                      <TableCell align="right" >
-                        {/* <IconButton  color="primary"  arial-label="delete" size="medium">
-                          <MdAdd/>
-                        </IconButton>
-
-                        <IconButton  color="secondary" arial-label="delete" size="medium">
-                          <MdDelete/>
-                        </IconButton> */}
-
-                        <button className="custom-button blue" onClick={() => handleModalAddCoupon(row)}>
-                          <MdAdd/>
-                        </button>
-                        
-                        <button className="custom-button red" onClick={() => handleModalDelete(row)}>
-                          <MdDelete/>
+                      <TableCell align="right">
+                        <button
+                          className="custom-button red"
+                          onClick={() => handleModalDelete(row)}
+                        >
+                          <MdDelete />
                         </button>
                       </TableCell>
                     </TableRow>
@@ -508,10 +738,9 @@ const CouponTable: React.FC = () => {
         />
       </Paper>
 
-      <CustomModal/>
-      
+      <CustomModal />
     </div>
   );
-}
+};
 
 export default CouponTable;

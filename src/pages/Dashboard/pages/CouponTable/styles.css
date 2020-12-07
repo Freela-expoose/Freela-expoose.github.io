@@ -29,3 +29,19 @@
 .red:hover {
     background: rgb(196, 29, 0);
 }
+
+#modal-form {
+    display: flex;
+}
+
+#modal-form #div-form {
+    margin-right: 24px;
+    display: flex;
+    flex-direction: column;
+}
+
+
+#modal-form #select-div {
+    width: 50%;
+    padding-top: 16px;
+}

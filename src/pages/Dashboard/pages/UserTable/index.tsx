@@ -9,12 +9,14 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Paper from '@material-ui/core/Paper';
-import { MdDelete, MdAdd } from 'react-icons/md';
+import { MdDelete, MdAdd, MdSearch } from 'react-icons/md';
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import IconButton from '@material-ui/core/IconButton'
 
 import './styles.css';
 import api from '../../../../services/api';
@@ -215,6 +217,10 @@ const useStyles = makeStyles((theme: Theme) =>
 
     margin: {
       marginBottom: 16
+    },
+
+    marginSearch: {
+      margin: 8
     }
 
   }),
@@ -232,6 +238,7 @@ const UserTable: React.FC = () => {
   const [currentRow, setCurrentRow] = React.useState<Data>({} as Data);
   const [modalType, setModalType] = React.useState<ModalType>('add');
   // const [row, setRow] = React.useState<Data[]>([] as Data[]);
+  const [search, setSearch] = React.useState<string>("");
   let points = 0;
 
 
@@ -309,6 +316,26 @@ const UserTable: React.FC = () => {
 
     alert('Adicionado com sucesso!!! '+ points);
     refreshPage();
+  }
+
+  function handleSearchChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const { value } = event.target;
+
+    setSearch(value);
+    // handleSearchClick();
+  }
+
+  function handleSearchClick() {
+    // if(search !== ""){
+    //   api.get('admin/getCouponList', {
+    //     params: {
+    //       value: search
+    //     }
+    //   }).then(res => {
+    //     setRow(res.data);
+    //   }).catch(err => console.log(err.message));
+    // }
+    alert(search);
   }
 
   function CustomModal(){
@@ -402,8 +429,27 @@ const UserTable: React.FC = () => {
 
   return (
     <div className={classes.root}>
-      <h1 id="title">Tabela dos usuários</h1>
+      <h1 id="titlePage">Tabela dos usuários</h1>
       <Paper className={classes.paper} >
+        <TextField
+            id="search-input"
+            label="Pesquisar"
+            variant="filled"
+            color="secondary"
+            onChange={handleSearchChange}
+            value={search}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={handleSearchClick}>
+                    <MdSearch/>
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            className={classes.marginSearch}
+          />
+
         <TableContainer>
           <Table
             className={classes.table}
