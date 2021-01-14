@@ -17,52 +17,53 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton'
+import { useHistory } from 'react-router-dom';
 
 import './styles.css';
 import api from '../../../../services/api';
 
 
 
-interface Data {
-  calories: number;
-  carbs: number;
-  fat: number;
-  name: string;
-  protein: number;
-}
-
 // interface Data {
-//   id: number;
+//   calories: number;
+//   carbs: number;
+//   fat: number;
 //   name: string;
-//   email: string;
-//   points: number;
+//   protein: number;
 // }
 
-function createData(
-  name: string,
-  calories: number,
-  fat: number,
-  carbs: number,
-  protein: number,
-): Data {
-  return { name, calories, fat, carbs, protein };
+interface Data {
+  _id: string;
+  name: string;
+  email: string;
+  points: number;
 }
 
-const rows = [
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Donut', 452, 25.0, 51, 4.9),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-  createData('Honeycomb', 408, 3.2, 87, 6.5),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Jelly Bean', 375, 0.0, 94, 0.0),
-  createData('KitKat', 518, 26.0, 65, 7.0),
-  createData('Lollipop', 392, 0.2, 98, 0.0),
-  createData('Marshmallow', 318, 0, 81, 2.0),
-  createData('Nougat', 360, 19.0, 9, 37.0),
-  createData('Oreo', 437, 18.0, 63, 4.0),
-];
+// function createData(
+//   name: string,
+//   calories: number,
+//   fat: number,
+//   carbs: number,
+//   protein: number,
+// ): Data {
+//   return { name, calories, fat, carbs, protein };
+// }
+
+// const rows = [
+//   createData('Cupcake', 305, 3.7, 67, 4.3),
+//   createData('Donut', 452, 25.0, 51, 4.9),
+//   createData('Eclair', 262, 16.0, 24, 6.0),
+//   createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
+//   createData('Gingerbread', 356, 16.0, 49, 3.9),
+//   createData('Honeycomb', 408, 3.2, 87, 6.5),
+//   createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
+//   createData('Jelly Bean', 375, 0.0, 94, 0.0),
+//   createData('KitKat', 518, 26.0, 65, 7.0),
+//   createData('Lollipop', 392, 0.2, 98, 0.0),
+//   createData('Marshmallow', 318, 0, 81, 2.0),
+//   createData('Nougat', 360, 19.0, 9, 37.0),
+//   createData('Oreo', 437, 18.0, 63, 4.0),
+// ];
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -105,20 +106,20 @@ interface HeadCell {
 }
 
 
-const headCells: HeadCell[] = [
-  { id: 'name', numeric: false, disablePadding: false, label: 'Dessert (100g serving)' },
-  { id: 'calories', numeric: true, disablePadding: false, label: 'Calories' },
-  { id: 'fat', numeric: true, disablePadding: false, label: 'Fat (g)' },
-  { id: 'carbs', numeric: true, disablePadding: false, label: 'Carbs (g)' },
-  { id: 'protein', numeric: true, disablePadding: false, label: 'Protein (g)' },
-];
-
 // const headCells: HeadCell[] = [
-//   { id: 'name', numeric: false, disablePadding: false, label: 'Nome' },
-//   { id: 'id', numeric: true, disablePadding: false, label: 'ID' },
-//   { id: 'email', numeric: true, disablePadding: false, label: 'Email' },
-//   { id: 'points', numeric: true, disablePadding: false, label: 'Pontos' },
+//   { id: 'name', numeric: false, disablePadding: false, label: 'Dessert (100g serving)' },
+//   { id: 'calories', numeric: true, disablePadding: false, label: 'Calories' },
+//   { id: 'fat', numeric: true, disablePadding: false, label: 'Fat (g)' },
+//   { id: 'carbs', numeric: true, disablePadding: false, label: 'Carbs (g)' },
+//   { id: 'protein', numeric: true, disablePadding: false, label: 'Protein (g)' },
 // ];
+
+const headCells: HeadCell[] = [
+  { id: 'name', numeric: false, disablePadding: false, label: 'Nome' },
+  { id: '_id', numeric: true, disablePadding: false, label: 'ID' },
+  { id: 'email', numeric: true, disablePadding: false, label: 'Email' },
+  { id: 'points', numeric: true, disablePadding: false, label: 'Pontos' },
+];
 
 interface EnhancedTableProps {
   classes: ReturnType<typeof useStyles>;
@@ -230,24 +231,41 @@ const useStyles = makeStyles((theme: Theme) =>
 const UserTable: React.FC = () => {
   const classes = useStyles();
   const [order, setOrder] = React.useState<Order>('asc');
-  const [orderBy, setOrderBy] = React.useState<keyof Data>('calories');
+  const [orderBy, setOrderBy] = React.useState<keyof Data>('name');
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [openModal, setOpenModal] = React.useState<boolean>(false);
   const [currentRow, setCurrentRow] = React.useState<Data>({} as Data);
   const [modalType, setModalType] = React.useState<ModalType>('add');
-  // const [row, setRow] = React.useState<Data[]>([] as Data[]);
+  const [rows, setRow] = React.useState<Data[]>([] as Data[]);
   const [search, setSearch] = React.useState<string>("");
   let points = 0;
 
+  const history = useHistory();
+  const currentUser = JSON.parse(String(localStorage.getItem("@Expose:user")));
+  const token = localStorage.getItem("@Expose:token");
+
 
   // TODO: Carregar todos os dados da lista
-  // useEffect(() => {
-  //   api.get('admin/getUserList').then(res => {
-  //     setRow(res.data);
-  //   }).catch(err => console.log(err.message));
-  // }, []);
+  useEffect(() => {
+    // console.log(api.defaults.headers.common['Authorization']);
+    if(currentUser && token){
+      api.get('profile/getall', {
+        params: {
+          type: currentUser.type
+        },
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      }).then(res => {
+        setRow(res.data);
+      }).catch(err => alert(err.message));
+    }else {
+      history.push("/");
+    }
+    
+  }, []);
 
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -292,30 +310,42 @@ const UserTable: React.FC = () => {
   }
 
   function handleDelete(){
-    // api.delete('admin/deleteUser', {
-    //   params: {
-    //     email: currentRow.email
-    //   }
-    // }).then((res) => {
-    //   alert('Deletado com sucesso!!!');
-    //   refreshPage();
-    // } ).catch(err => console.log(err.message));
-    alert('Deletado com sucesso!!!');
-    refreshPage();
+   if(currentUser && token){
+      api.delete('profile/delete', {
+        params: {
+          email: currentRow.email,
+          type: currentUser.type
+        },
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      }).then((res) => {
+        alert(res.data.deleted + ' Deletado com sucesso!!!');
+        refreshPage();
+      } ).catch(err => alert(err.message));
+   }
+    // alert('Deletado com sucesso!!!');
+    // refreshPage();
   }
 
 
   function handleAddPoint(){
-    // api.patch('admin/addPoint', {
-    //   points,
-    //   email: currentRow.name
-    //   refreshPage();
-    // }).then(res => {
-    //   alert('Adicionado com sucesso!!!');
-    // }).catch(err => console.log(err.message));
-
-    alert('Adicionado com sucesso!!! '+ points);
-    refreshPage();
+    if(currentUser && token){
+      api.patch('points/update', {
+        value: points,
+        email: currentRow.name
+      },{
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        }
+      }).then(res => {
+        alert('Adicionado com sucesso!!!');
+        refreshPage();
+      }).catch(err => console.log(err.message));
+    }
+    // alert('Adicionado com sucesso!!! '+ points);
+    // refreshPage();
   }
 
   function handleSearchChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -473,15 +503,14 @@ const UserTable: React.FC = () => {
                     <TableRow
                       hover
                       tabIndex={-1}
-                      key={row.name}
+                      key={row._id}
                     >
                       <TableCell component="th" scope="row">
                         {row.name}
                       </TableCell>
-                      <TableCell align="right">{row.calories}</TableCell>
-                      <TableCell align="right">{row.fat}</TableCell>
-                      <TableCell align="right">{row.carbs}</TableCell>
-                      <TableCell align="right">{row.protein}</TableCell>
+                      <TableCell align="right">{row._id.substring(0, 13) + "..."}</TableCell>
+                      <TableCell align="right">{row.email}</TableCell>
+                      <TableCell align="right">{row.points}</TableCell>
                       <TableCell align="right" >
                         {/* <IconButton  color="primary"  arial-label="delete" size="medium">
                           <MdAdd/>

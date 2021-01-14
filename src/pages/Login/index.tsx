@@ -16,16 +16,18 @@ const Login: React.FC = () => {
     async function handleSubmit(event: FormEvent){
         event.preventDefault();
         // TODO: Context API Logic
-        // api.post('user/login', formData).then(res => {
-        //     const { user, token } = res.data;
-        //     localStorage.setItem('@currentUser', JSON.stringify(user));
-        //     localStorage.setItem('@userToken', token);
+        // console.log(formData);
+        api.post('profile/login', formData).then(res => {
+            const { user, token } = res.data;
+            localStorage.setItem('@Expose:user', JSON.stringify(user));
+            localStorage.setItem('@Expose:token', token);
 
-        //     api.defaults.headers.Authorization = `Bearer ${token}`;
-        //     alert("Logado com sucesso!!!");
-        //     history.push('/dashboard');
-        // }).catch(err => console.log(err.message));
-        history.push('/dashboard');
+            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            alert("Logado com sucesso!!!");
+            history.push('/dashboard');
+        }).catch(err => {
+            window.alert(err.message);
+        });
         
     }
 
@@ -54,12 +56,12 @@ const Login: React.FC = () => {
 
                     <div className="field">
                         <label htmlFor="email">Email</label>
-                        <input type="email" name="email" id="email" onChange={handleInputChange}/>
+                        <input type="email" name="email" id="email" onChange={handleInputChange} required/>
                     </div>
 
                     <div className="field">
                         <label htmlFor="password">Senha</label>
-                        <input type="password" id="password" name="password" onChange={handleInputChange}/>
+                        <input type="password" id="password" name="password" onChange={handleInputChange} required/>
                     </div>
                 </fieldset>
 

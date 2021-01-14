@@ -30,6 +30,14 @@
     background: rgb(196, 29, 0);
 }
 
+.yellow {
+    background: rgb(255, 208, 0);
+}
+
+.yellow:hover {
+    background: rgb(204, 167, 0);
+}
+
 #modal-form {
     display: flex;
 }
