@@ -117,6 +117,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   const token = localStorage.getItem("@Expose:token");
   // let price = 0;
   const [price, setPrice] = React.useState<Number>(0);
+  const wrapper = React.createRef();
+
   const createSortHandler = (property: keyof Data) => (
     event: React.MouseEvent<unknown>
   ) => {
@@ -130,6 +132,10 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 
   const handleChangeFormData = (event: React.ChangeEvent<{name?: string | undefined, value: unknown}>) => {
     const { name, value } = event.target;
+    // console.log(value);
+    // 0 = default value for variables of type Number
+    // Thats why i change 0(desativado) for 2(desativado)
+    // And then he obay the conditional and change the state correctly
 
     if(name && value){
       if(name === "isActive"){
@@ -144,11 +150,12 @@ function EnhancedTableHead(props: EnhancedTableProps) {
         });
       }
     }
+    // console.log("formData add", formData);
   };
 
   function handleSubmitAddFormData() {
       const {title, description, photo, isActive, expireDate} = formData;
-      console.log(price);
+      // console.log(price);
       const newData = {
         title, 
         description, 
@@ -157,7 +164,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
         expireDate,
         price: price
       };
-      console.log(price);
+      // console.log(price);
     api.post('coupon/create', newData, {
       headers: {
         "Content-Type": "application/json",
@@ -231,6 +238,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
         aria-describedby="transition-modal-description"
         className={classes.modal}
         open={openModal}
+        ref={wrapper}
         onClose={() => setOpenModal(false)}
         closeAfterTransition
         BackdropComponent={Backdrop}
@@ -265,7 +273,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                       <Select
                         labelId = "select-label"
                         id="isActive"
-                        value={1}
+                        value={formData.isActive ? 1 : 2}
                         onChange={handleChangeFormData}
                         name="isActive"
                         className={classes.margin}
@@ -274,7 +282,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                         style={{width: '100%'}}
                       >
                         <MenuItem value={1} >Ativado</MenuItem>
-                        <MenuItem value={0} >Desativado</MenuItem>
+                        <MenuItem value={2} >Desativado</MenuItem>
                       </Select>
                     </div>
                   </div>
@@ -289,7 +297,6 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                       className={classes.margin}
                       required
                       color="secondary"
-                      // defaultValue="24-05-2017"
                       InputLabelProps={{
                         shrink: true,
                       }}             
@@ -327,26 +334,6 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                 
                 </div>
 
-                {/* <div id="modal-upload-images">
-                  <img
-                    src="https://exposeestetica.com.br/wp-content/uploads/2018/12/depilacao-a-laser-milesman.jpg"
-                    alt="Foto"
-                    width="256"
-                  />
-                  <div>
-                    <Button variant="contained" component="label" fullWidth>
-                      Carregar imagem
-                      <input
-                        id="photo"
-                        type="file"
-                        hidden
-                        onChange={handleChangeFormData}
-                        name="photo"
-                      />
-                    </Button>
-                  </div>
-                </div> */}
-              {/* </Grid> */}
               </div>
               <Button
                 variant="contained"
@@ -434,6 +421,7 @@ const CouponTable: React.FC = () => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [openModal, setOpenModal] = React.useState<boolean>(false);
+  const [openDelModal, setOpenDelModal] = React.useState<boolean>(false);
   const [currentRow, setCurrentRow] = React.useState<Data>({} as Data);
   const [modalType, setModalType] = React.useState<ModalType>("update");
   const [rows, setRow] = React.useState<Data[]>([] as Data[]);
@@ -447,12 +435,12 @@ const CouponTable: React.FC = () => {
     photo: ""
   });
   const [search, setSearch] = React.useState<string>('');
-  let price = 0;
-  let date = "";
-  // const [price, setPrice] = React.useState<Number>(0);
+  // let price = 0;
+  const [price, setPrice] = React.useState<Number>(0);
   const history = useHistory();
   const currentUser = JSON.parse(String(localStorage.getItem("@Expose:user")));
   const token = localStorage.getItem("@Expose:token");
+  const ref = React.createRef();
 
 
   // TODO: Carregar todos os dados da lista
@@ -491,29 +479,26 @@ const CouponTable: React.FC = () => {
   ) => {
     const { value } = event.target;
     
-    // setPrice(Number(value))
-    price = Number(value);
-    console.log(price)
+    setPrice(Number(value));
+    // price = Number(value);
+    console.log("Price: ",price)
     
   };
 
-  const handleChangeDateField = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const { value } = event.target;
-    
-    // setPrice(Number(value))
-    date = value;
-    console.log(date);
-    
-  };
 
   const handleChangeFormData = (event: React.ChangeEvent<{name?: string | undefined, value: unknown}>) => {
     const { name, value } = event.target;
     // event.preventDefault();
+    // 0 = default value for variables of type Number
+    // Thats why i change 0(desativado) for 2(desativado)
+    // And then he obay the conditional and change the state correctly
+
+    // Re-render problem: putting the Pure Modal in the Father body component resolve it
+    // The setState() has a delay to change itself
 
     if(name && value){
       if(name === "isActive"){
+        // console.log("IsActive:", value === 1 ? true : false)
         setFormData({
           ...formData,
           [name]: value === 1 ? true : false,
@@ -525,20 +510,22 @@ const CouponTable: React.FC = () => {
         });
       }
     }
-    console.log(formData);
+    console.log("Valor: ", value);
+    console.log("Condição: ", name === "isActive");
+    console.log("Pós formData", formData);
   };
 
   // TODO: Modal confirmando o Delete
   function handleModalDelete(rowData: Data) {
     setCurrentRow(rowData);
-    setModalType("delete");
-    setOpenModal(true);
+    // setModalType("delete");
+    setOpenDelModal(true);
   }
 
   function handleModalUpdate(rowData: Data) {
     // setCurrentRow(rowData);
     setFormData(rowData);
-    setModalType("update");
+    // setModalType("update");
     setOpenModal(true);
   }
 
@@ -558,8 +545,6 @@ const CouponTable: React.FC = () => {
       alert('Deletado com sucesso!!!');
       refreshPage();
     } ).catch(err => alert(err.message));
-    // alert("Deletado com sucesso!!!");
-    // refreshPage();
   }
 
   function handleSubmitUpFormData() {
@@ -571,8 +556,9 @@ const CouponTable: React.FC = () => {
       photo, 
       isActive, 
       expireDate,
-      price: price
+      price
     };
+    console.log("Data: ",newData);
     api.patch('coupon/update', newData, {
       params: {
         type: currentUser.type
@@ -607,200 +593,11 @@ const CouponTable: React.FC = () => {
     alert(search);
   }
 
-  function CustomModal() {
-    if (modalType === "delete") {
-      return (
-        <Modal
-          disablePortal
-          disableEnforceFocus
-          disableAutoFocus
-          aria-labelledby="transition-modal-title"
-          aria-describedby="transition-modal-description"
-          className={classes.modal}
-          open={openModal}
-          onClose={() => setOpenModal(false)}
-          closeAfterTransition
-          BackdropComponent={Backdrop}
-          BackdropProps={{
-            timeout: 500,
-          }}
-        >
-          <Fade in={openModal}>
-            <div className={classes.container}>
-              <h2 id="transition-modal-title">Deseja continuar</h2>
-              <p id="transition-modal-description">
-                Quer mesmo deletar {currentRow.title}?
-              </p>
-
-              <div id="button-group">
-                <Button
-                  variant="contained"
-                  color="primary"
-                  className={classes.button}
-                  onClick={handleDelete}
-                  type="submit"
-                >
-                  Sim
-                </Button>
-
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => setOpenModal(false)}
-                >
-                  Não
-                </Button>
-              </div>
-            </div>
-          </Fade>
-        </Modal>
-      );
-    } else {
-      return (
-        <Modal
-          disablePortal
-          disableEnforceFocus
-          disableAutoFocus
-          aria-labelledby="transition-modal-title"
-          aria-describedby="transition-modal-description"
-          className={classes.modal}
-          open={openModal}
-          onClose={() => setOpenModal(false)}
-          closeAfterTransition
-          BackdropComponent={Backdrop}
-          BackdropProps={{
-            timeout: 500,
-          }}
-        >
-          <Fade in={openModal}>
-            <div className={classes.container} id="modal">
-              {/* Alterando o state(formData) ele renderiza o componente novamente */}
-              <h2>Atualizar cupom: {formData.title}</h2>
-              <form noValidate autoComplete="off">
-                {/* <Grid container justify="center"> */}
-                <div id="modal-form">
-                  <div id="div-form">
-                  
-                    <div style={{display: 'flex'}}>
-                      <TextField
-                        id="title"
-                        onChange={handleChangeFormData}
-                        name="title"
-                        variant="filled"
-                        label="Título"
-                        className={classes.margin}
-                        defaultValue={formData.title}
-                        required
-                        color="secondary"
-                      />
-
-              
-    
-                      <div id="select-div">
-                        <InputLabel id="select-label">Estado</InputLabel>
-                        <Select
-                          labelId = "select-label"
-                          id="isActive"
-                          value={formData.isActive ? 1 : 0}
-                          onChange={handleChangeFormData}
-                          name="isActive"
-                          className={classes.margin}
-                          color="secondary"
-                          fullWidth
-                          style={{width: '100%'}}
-                        >
-                          <MenuItem value={1} >Ativado</MenuItem>
-                          <MenuItem value={0} >Desativado</MenuItem>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div>
-                      <TextField
-                        id="expireDate"
-                        onChange={handleChangeDateField}
-                        name="expireDate"
-                        label="Data de vencimento"
-                        type="date"
-                        className={classes.margin}
-                        required
-                        color="secondary"
-                        // defaultValue="24-05-2017"
-                        InputLabelProps={{
-                          shrink: true,
-                        }}             
-                      />
-
-                      <TextField
-                        id="price"
-                        onChange={handleChangeTextField}
-                        name="price"
-                        variant="filled"
-                        label="Preço"
-                        className={classes.margin}
-                        // defaultValue={formData.price}
-                        required
-                        type="number"
-                        color="secondary"
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
-                      />
-                    </div>
-
-                    <TextField
-                      id="description"
-                      onChange={handleChangeFormData}
-                      name="description"
-                      variant="filled"
-                      label="Descrição"
-                      className={classes.margin}
-                      defaultValue={formData.description}
-                      required
-                      color="secondary"
-                      fullWidth
-                      multiline
-                    />
-                  
-                  </div>
-
-                  <div id="modal-upload-images">
-                    <img
-                      src={formData.photo}
-                      alt="Foto"
-                      width="256"
-                    />
-                    {/* <div>
-                      <Button variant="contained" component="label" fullWidth>
-                        Carregar imagem
-                        <input
-                          id="photo"
-                          type="file"
-                          hidden
-                          onChange={handleChangeFormData}
-                          name="photo"
-                        />
-                      </Button>
-                    </div> */}
-                  </div>
-                {/* </Grid> */}
-                </div>
-                <Button
-                  variant="contained"
-                  onClick={handleSubmitUpFormData}
-                  color="primary"
-                  style={{marginTop: 24}}
-                >
-                  Enviar
-                </Button>
-                
-              </form>
-            </div>
-          </Fade>
-        </Modal>
-      );
-    }
-  }
+  // const CustomModal = React.memo(() => {
+  //     return (
+        
+  //     );
+  // });
 
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
@@ -891,7 +688,198 @@ const CouponTable: React.FC = () => {
         />
       </Paper>
 
-      <CustomModal />
+      <Modal
+          disablePortal
+          disableEnforceFocus
+          disableAutoFocus
+          aria-labelledby="transition-modal-title"
+          aria-describedby="transition-modal-description"
+          className={classes.modal}
+          open={openModal}
+          onClose={() => setOpenModal(false)}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 500,
+          }}
+        >
+          <Fade in={openModal}>
+            <div className={classes.container} id="modal">
+              {/* Alterando o state(formData) ele renderiza o componente novamente */}
+              <h2>Atualizar cupom: {formData.title}</h2>
+              <form noValidate autoComplete="off">
+                {/* <Grid container justify="center"> */}
+                <div id="modal-form">
+                  <div id="div-form">
+                  
+                    <div style={{display: 'flex'}}>
+                      <TextField
+                        id="title"
+                        onChange={handleChangeFormData}
+                        name="title"
+                        variant="filled"
+                        label="Título"
+                        className={classes.margin}
+                        defaultValue={formData.title}
+                        // value={formData.title}
+                        required
+                        color="secondary"
+                      />
+
+              
+    
+                      <div id="select-div">
+                        <InputLabel id="select-label">Estado</InputLabel>
+                        <Select
+                          labelId = "select-label"
+                          id="isActive"
+                          value={formData.isActive ? 1 : 2}
+                          onChange={handleChangeFormData}
+                          name="isActive"
+                          className={classes.margin}
+                          color="secondary"
+                          fullWidth
+                          style={{width: '100%'}}
+                        >
+                          <MenuItem value={1} >Ativado</MenuItem>
+                          <MenuItem value={2} >Desativado</MenuItem>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <TextField
+                        id="expireDate"
+                        onChange={handleChangeFormData}
+                        name="expireDate"
+                        label="Data de vencimento"
+                        type="date"
+                        className={classes.margin}
+                        required
+                        color="secondary"
+                        // defaultValue="24-05-2017"
+                        // value={formData.expireDate}
+                        InputLabelProps={{
+                          shrink: true,
+                        }}             
+                      />
+
+                      <TextField
+                        id="price"
+                        onChange={handleChangeTextField}
+                        name="price"
+                        variant="filled"
+                        label="Preço"
+                        className={classes.margin}
+                        defaultValue={formData.price}
+                        // value={price}
+                        required
+                        type="number"
+                        color="secondary"
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                      />
+                    </div>
+
+                    <TextField
+                      id="description"
+                      onChange={handleChangeFormData}
+                      name="description"
+                      variant="filled"
+                      label="Descrição"
+                      className={classes.margin}
+                      defaultValue={formData.description}
+                      // value={formData.description}
+                      required
+                      color="secondary"
+                      fullWidth
+                      multiline
+                    />
+                  
+                  </div>
+
+                  <div id="modal-upload-images">
+                    <img
+                      src={formData.photo}
+                      alt="Foto"
+                      width="256"
+                    />
+                    {/* <div>
+                      <Button variant="contained" component="label" fullWidth>
+                        Carregar imagem
+                        <input
+                          id="photo"
+                          type="file"
+                          hidden
+                          onChange={handleChangeFormData}
+                          name="photo"
+                        />
+                      </Button>
+                    </div> */}
+                  </div>
+                {/* </Grid> */}
+                </div>
+                <Button
+                  variant="contained"
+                  onClick={handleSubmitUpFormData}
+                  color="primary"
+                  style={{marginTop: 24}}
+                >
+                  Enviar
+                </Button>
+                
+              </form>
+            </div>
+          </Fade>
+        </Modal>
+
+      <Modal
+          disablePortal
+          disableEnforceFocus
+          disableAutoFocus
+          aria-labelledby="transition-modal-title"
+          aria-describedby="transition-modal-description"
+          className={classes.modal}
+          open={openDelModal}
+          onClose={() => setOpenDelModal(false)}
+          closeAfterTransition
+          BackdropComponent={Backdrop}
+          BackdropProps={{
+            timeout: 500,
+          }}
+        >
+          <Fade in={openDelModal}>
+            <div className={classes.container}>
+              <h2 id="transition-modal-title">Deseja continuar</h2>
+              <p id="transition-modal-description">
+                Quer mesmo deletar {currentRow.title}?
+              </p>
+
+              <div id="button-group">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.button}
+                  onClick={handleDelete}
+                  type="submit"
+                >
+                  Sim
+                </Button>
+
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setOpenDelModal(false)}
+                >
+                  Não
+                </Button>
+              </div>
+            </div>
+          </Fade>
+        </Modal>
+
+      {/* <CustomModal /> */}
     </div>
   );
 };

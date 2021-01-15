@@ -330,10 +330,10 @@ const UserTable: React.FC = () => {
 
 
   function handleAddPoint(){
-    if(currentUser && token){
+    console.log(points);
       api.patch('points/update', {
         value: points,
-        email: currentRow.name
+        email: currentRow.email
       },{
         headers: {
           "Content-Type": "application/json",
@@ -342,8 +342,7 @@ const UserTable: React.FC = () => {
       }).then(res => {
         alert('Adicionado com sucesso!!!');
         refreshPage();
-      }).catch(err => console.log(err.message));
-    }
+      }).catch(err => alert(err.message));
     // alert('Adicionado com sucesso!!! '+ points);
     // refreshPage();
   }
