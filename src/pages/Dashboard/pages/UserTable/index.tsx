@@ -251,6 +251,7 @@ const UserTable: React.FC = () => {
   useEffect(() => {
     // console.log(api.defaults.headers.common['Authorization']);
     if(currentUser && token){
+      console.log("Token",token)
       api.get('profile/getall', {
         params: {
           type: currentUser.type
@@ -259,7 +260,11 @@ const UserTable: React.FC = () => {
           "Authorization": `Bearer ${token}`
         }
       }).then(res => {
-        setRow(res.data);
+        if(res.data){
+          setRow(res.data);
+        }else {
+          alert("Sem usuários")
+        }
       }).catch(err => alert(err.message));
     }else {
       history.push("/");
