@@ -251,7 +251,7 @@ const UserTable: React.FC = () => {
   useEffect(() => {
     // console.log(api.defaults.headers.common['Authorization']);
     if(currentUser && token){
-      console.log("Token",token)
+      // console.log("Token",token)
       api.get('profile/getall', {
         params: {
           type: currentUser.type

@@ -1,7 +1,7 @@
 import Axios from 'axios';
 
 const api = Axios.create({
-    baseURL: "https://ec2-18-221-37-26.us-east-2.compute.amazonaws.com:3333/",
+    baseURL: "http://ec2-18-221-37-26.us-east-2.compute.amazonaws.com:3333/",
     timeout: 3000
 });
 
