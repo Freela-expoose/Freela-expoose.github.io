@@ -533,6 +533,12 @@ const CouponTable: React.FC = () => {
     window.location.reload();
   }
 
+  function refreshTable() {
+    api.get<Data[]>('coupon/get').then(res => {
+      setRow(res.data);
+    }).catch(err => alert(err.message));
+  }
+
   function handleDelete() {
     api.delete('coupon/delete', {
       params: {
@@ -543,8 +549,9 @@ const CouponTable: React.FC = () => {
       }
     }).then((res) => {
       alert('Deletado com sucesso!!!');
-      refreshPage();
-    } ).catch(err => alert(err.message));
+      // refreshPage();
+      refreshTable();
+    } ).catch(err => alert(err.message)).finally(() => setOpenDelModal(false));
   }
 
   function handleSubmitUpFormData() {
@@ -569,8 +576,9 @@ const CouponTable: React.FC = () => {
       }
     }).then(res => {
         alert("Atualizado com sucesso!!!");
-        refreshPage();
-    }).catch(err => alert(err.message));
+        // refreshPage();
+        refreshTable();
+    }).catch(err => alert(err.message)).finally(() => setOpenModal(false));
   }
 
   function handleSearchChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -593,11 +601,6 @@ const CouponTable: React.FC = () => {
     alert(search);
   }
 
-  // const CustomModal = React.memo(() => {
-  //     return (
-        
-  //     );
-  // });
 
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);

@@ -272,6 +272,23 @@ const UserTable: React.FC = () => {
     
   }, []);
 
+  const refreshTable = () => {
+    api.get('profile/getall', {
+      params: {
+        type: currentUser.type
+      },
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    }).then(res => {
+      if(res.data){
+        setRow(res.data);
+      }else {
+        alert("Sem usuários")
+      }
+    }).catch(err => alert(err.message));
+  }
+
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -326,11 +343,10 @@ const UserTable: React.FC = () => {
         }
       }).then((res) => {
         alert(res.data.deleted + ' Deletado com sucesso!!!');
-        refreshPage();
-      } ).catch(err => alert(err.message));
+        // refreshPage();
+        refreshTable();
+      } ).catch(err => alert(err.message)).finally(() => setOpenModal(false));
    }
-    // alert('Deletado com sucesso!!!');
-    // refreshPage();
   }
 
 
@@ -346,10 +362,9 @@ const UserTable: React.FC = () => {
         }
       }).then(res => {
         alert('Adicionado com sucesso!!!');
-        refreshPage();
-      }).catch(err => alert(err.message));
-    // alert('Adicionado com sucesso!!! '+ points);
-    // refreshPage();
+        // refreshPage();
+        refreshTable();
+      }).catch(err => alert(err.message)).finally(() => setOpenModal(false));
   }
 
   function handleSearchChange(event: React.ChangeEvent<HTMLInputElement>) {
