@@ -610,7 +610,7 @@ const CouponTable: React.FC = () => {
       <h1 id="titlePage">Tabela de cupons</h1>
 
       <Paper className={classes.paper}>
-        <TextField
+        {/* <TextField
           id="search-input"
           label="Pesquisar"
           variant="filled"
@@ -627,7 +627,7 @@ const CouponTable: React.FC = () => {
             ),
           }}
           className={classes.marginSearch}
-        />
+        /> */}
 
         <TableContainer>
           <Table

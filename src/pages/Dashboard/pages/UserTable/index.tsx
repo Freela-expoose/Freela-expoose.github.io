@@ -480,7 +480,7 @@ const UserTable: React.FC = () => {
     <div className={classes.root}>
       <h1 id="titlePage">Tabela dos usuários</h1>
       <Paper className={classes.paper} >
-        <TextField
+        {/* <TextField
             id="search-input"
             label="Pesquisar"
             variant="filled"
@@ -497,7 +497,7 @@ const UserTable: React.FC = () => {
               ),
             }}
             className={classes.marginSearch}
-          />
+          /> */}
 
         <TableContainer>
           <Table
