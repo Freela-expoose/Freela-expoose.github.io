@@ -59,8 +59,8 @@ const Dashboard: React.FC = () => {
     }
 
     function handleLogOut(){
-        localStorage.removeItem('@currentUser');
-        localStorage.removeItem('@userToken');
+        localStorage.removeItem('@Expose:user');
+        localStorage.removeItem('@Expose:token');
         history.push('/');
     }
 
