@@ -181,7 +181,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 
     // price= Number(value);
     setPrice(Number(value));
-    console.log(price);
+    // console.log(price);
   };
 
   return (
@@ -481,7 +481,7 @@ const CouponTable: React.FC = () => {
     
     setPrice(Number(value));
     // price = Number(value);
-    console.log("Price: ",price)
+    // console.log("Price: ",price)
     
   };
 
@@ -510,9 +510,9 @@ const CouponTable: React.FC = () => {
         });
       }
     }
-    console.log("Valor: ", value);
-    console.log("Condição: ", name === "isActive");
-    console.log("Pós formData", formData);
+    // console.log("Valor: ", value);
+    // console.log("Condição: ", name === "isActive");
+    // console.log("Pós formData", formData);
   };
 
   // TODO: Modal confirmando o Delete
@@ -565,7 +565,7 @@ const CouponTable: React.FC = () => {
       expireDate,
       price
     };
-    console.log("Data: ",newData);
+    // console.log("Data: ",newData);
     api.patch('coupon/update', newData, {
       params: {
         type: currentUser.type

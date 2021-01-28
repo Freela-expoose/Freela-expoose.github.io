@@ -42,7 +42,7 @@ const Login: React.FC = () => {
             ...formData,
             [name]: value
         });
-        console.log(event.target);
+        // console.log(event.target);
     }
 
     return (

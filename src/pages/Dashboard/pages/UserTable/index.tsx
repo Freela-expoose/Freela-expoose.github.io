@@ -351,7 +351,7 @@ const UserTable: React.FC = () => {
 
 
   function handleAddPoint(){
-    console.log(points);
+    // console.log(points);
       api.patch('points/update', {
         value: points,
         email: currentRow.email
