@@ -1,31 +1,29 @@
 import React, { useEffect } from "react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import Table from "@material-ui/core/Table";
+import { MdDelete, MdAdd, MdUpdate, MdCached } from "react-icons/md";
+import CircularProgress from '@material-ui/core/CircularProgress';
+import TablePagination from "@material-ui/core/TablePagination";
+import TableSortLabel from "@material-ui/core/TableSortLabel";
+import TableContainer from "@material-ui/core/TableContainer";
+import InputLabel from '@material-ui/core/InputLabel';
+import IconButton from '@material-ui/core/IconButton';
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
-import TablePagination from "@material-ui/core/TablePagination";
-import TableRow from "@material-ui/core/TableRow";
-import TableSortLabel from "@material-ui/core/TableSortLabel";
-import Paper from "@material-ui/core/Paper";
-import { MdDelete, MdAdd, MdSearch, MdUpdate } from "react-icons/md";
-import Modal from "@material-ui/core/Modal";
-import Backdrop from "@material-ui/core/Backdrop";
-import Fade from "@material-ui/core/Fade";
-import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import Select from '@material-ui/core/Select';
+import TableRow from "@material-ui/core/TableRow";
+import Backdrop from "@material-ui/core/Backdrop";
 import MenuItem from '@material-ui/core/MenuItem';
-import InputLabel from '@material-ui/core/InputLabel';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import IconButton from '@material-ui/core/IconButton';
+import Button from "@material-ui/core/Button";
+import Select from '@material-ui/core/Select';
 import { useHistory } from 'react-router-dom';
-
+import Table from "@material-ui/core/Table";
+import Paper from "@material-ui/core/Paper";
+import Modal from "@material-ui/core/Modal";
+import Fade from "@material-ui/core/Fade";
 
 import "./styles.css";
 import api from "../../../../services/api";
-import { constants } from "http2";
 
 
 interface Data {
@@ -50,7 +48,7 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 
 type Order = "asc" | "desc";
 
-type ModalType = "delete" | "update";
+// type ModalType = "delete" | "update";
 
 function getComparator<Key extends keyof any>(
   order: Order,
@@ -86,8 +84,8 @@ const headCells: HeadCell[] = [
   { id: 'title', numeric: false, disablePadding: false, label: 'Título' },
   { id: '_id', numeric: true, disablePadding: false, label: 'ID' },
   { id: 'price', numeric: true, disablePadding: false, label: 'Preço' },
-  { id: 'expireDate', numeric: false, disablePadding: false, label: 'Data de vencimento' },
-  { id: 'isActive', numeric: false, disablePadding: false, label: 'Estado' },
+  { id: 'expireDate', numeric: true, disablePadding: false, label: 'Data de vencimento' },
+  { id: 'isActive', numeric: true, disablePadding: false, label: 'Estado' },
 ];
 
 interface EnhancedTableProps {
@@ -99,10 +97,12 @@ interface EnhancedTableProps {
   order: Order;
   orderBy: string;
   rowCount: number;
+  refresh(): void;
+  setIsLoading(load: boolean): void;
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-  const { classes, order, orderBy, onRequestSort } = props;
+  const { classes, order, orderBy, onRequestSort, refresh, setIsLoading } = props;
   const [formData, setFormData] = React.useState<Data>({
     _id: "",
     title: "",
@@ -113,9 +113,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     photo: ""
   });
   const [openModal, setOpenModal] = React.useState<boolean>(false);
-  const todayDate = new Date().getDate();
   const token = localStorage.getItem("@Expose:token");
-  // let price = 0;
   const [price, setPrice] = React.useState<Number>(0);
   const wrapper = React.createRef();
 
@@ -154,6 +152,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   };
 
   function handleSubmitAddFormData() {
+      setOpenModal(false);
+      setIsLoading(true);
       const {title, description, photo, isActive, expireDate} = formData;
       // console.log(price);
       const newData = {
@@ -172,8 +172,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
       }
     }).then(res => {
         alert("Adicionado com sucesso!!! ");
-        window.location.reload();
-    }).catch(err => alert(err.message));
+        refresh();
+    }).catch(err => alert(err.message)).finally(() => setIsLoading(false));
   }
 
   const handleChangeTextField = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -247,14 +247,14 @@ function EnhancedTableHead(props: EnhancedTableProps) {
         }}
       >
         <Fade in={openModal}>
-          <div className={classes.container} id="modal">
+          <section className={classes.container} id="modal">
             <h2>Adicionar cupom</h2>
             <form noValidate autoComplete="off">
               {/* <Grid container justify="center"> */}
-              <div id="modal-form">
-                <div id="div-form">
+              <section id="modal-form">
+                <section id="div-form">
                 
-                  <div style={{display: 'flex'}}>
+                  <section style={{display: 'flex'}}>
                     <TextField
                       id="title"
                       onChange={handleChangeFormData}
@@ -268,7 +268,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 
             
   
-                    <div id="select-div">
+                    <section id="select-div">
                       <InputLabel id="select-label">Estado</InputLabel>
                       <Select
                         labelId = "select-label"
@@ -284,10 +284,10 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                         <MenuItem value={1} >Ativado</MenuItem>
                         <MenuItem value={2} >Desativado</MenuItem>
                       </Select>
-                    </div>
-                  </div>
+                    </section>
+                  </section>
 
-                  <div>
+                  <section>
                     <TextField
                       id="expireDate"
                       onChange={handleChangeFormData}
@@ -317,7 +317,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                         shrink: true,
                       }}
                     />
-                  </div>
+                  </section>
 
                   <TextField
                     id="description"
@@ -332,9 +332,9 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                     multiline
                   />
                 
-                </div>
+                </section>
 
-              </div>
+              </section>
               <Button
                 variant="contained"
                 onClick={handleSubmitAddFormData}
@@ -345,7 +345,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               </Button>
               
             </form>
-          </div>
+          </section>
         </Fade>
       </Modal>
     </>
@@ -410,6 +410,16 @@ const useStyles = makeStyles((theme: Theme) =>
 
     marginSearch: {
       margin: 8
+    },
+
+    loading: {
+      marginLeft: 12,
+      marginTop: 16
+    },
+
+    refreshButton: {
+      margin: 8,
+      float: 'right'
     }
   })
 );
@@ -423,7 +433,6 @@ const CouponTable: React.FC = () => {
   const [openModal, setOpenModal] = React.useState<boolean>(false);
   const [openDelModal, setOpenDelModal] = React.useState<boolean>(false);
   const [currentRow, setCurrentRow] = React.useState<Data>({} as Data);
-  const [modalType, setModalType] = React.useState<ModalType>("update");
   const [rows, setRow] = React.useState<Data[]>([] as Data[]);
   const [formData, setFormData] = React.useState<Data>({
     _id: "",
@@ -434,21 +443,21 @@ const CouponTable: React.FC = () => {
     isActive: true,
     photo: ""
   });
-  const [search, setSearch] = React.useState<string>('');
-  // let price = 0;
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [price, setPrice] = React.useState<Number>(0);
   const history = useHistory();
   const currentUser = JSON.parse(String(localStorage.getItem("@Expose:user")));
   const token = localStorage.getItem("@Expose:token");
-  const ref = React.createRef();
+  const rootRef = React.useRef<HTMLDivElement>(null);
 
 
   // TODO: Carregar todos os dados da lista
   useEffect(() => {
     if(currentUser && token){
+      setIsLoading(true);
       api.get<Data[]>('coupon/get').then(res => {
         setRow(res.data);
-      }).catch(err => alert(err.message));
+      }).catch(err => alert(err.message)).finally(() => setIsLoading(false));
     }else {
       history.push("/");
     }
@@ -479,10 +488,7 @@ const CouponTable: React.FC = () => {
   ) => {
     const { value } = event.target;
     
-    setPrice(Number(value));
-    // price = Number(value);
-    // console.log("Price: ",price)
-    
+    setPrice(Number(value));  
   };
 
 
@@ -499,6 +505,7 @@ const CouponTable: React.FC = () => {
     if(name && value){
       if(name === "isActive"){
         // console.log("IsActive:", value === 1 ? true : false)
+        // ... => spread operator
         setFormData({
           ...formData,
           [name]: value === 1 ? true : false,
@@ -529,17 +536,16 @@ const CouponTable: React.FC = () => {
     setOpenModal(true);
   }
 
-  function refreshPage() {
-    window.location.reload();
-  }
-
   function refreshTable() {
+    setIsLoading(true);
     api.get<Data[]>('coupon/get').then(res => {
       setRow(res.data);
-    }).catch(err => alert(err.message));
+    }).catch(err => alert(err.message)).finally(() => setIsLoading(false));
   }
 
   function handleDelete() {
+    setOpenDelModal(false);
+    setIsLoading(true);
     api.delete('coupon/delete', {
       params: {
         _id: currentRow._id
@@ -551,21 +557,22 @@ const CouponTable: React.FC = () => {
       alert('Deletado com sucesso!!!');
       // refreshPage();
       refreshTable();
-    } ).catch(err => alert(err.message)).finally(() => setOpenDelModal(false));
+    } ).catch(err => alert(err.message)).finally(() => setIsLoading(false));
   }
 
   function handleSubmitUpFormData() {
-    const {title, description, photo, isActive, expireDate} = formData;
+    setOpenModal(false);
+    setIsLoading(true);
+    const {title, description, isActive, _id} = formData;
     // console.log(price);
     const newData = {
+      _id,
       title, 
-      description, 
-      photo, 
-      isActive, 
-      expireDate,
+      description,
+      isActive,
       price
     };
-    // console.log("Data: ",newData);
+    console.log("Data: ",newData);
     api.patch('coupon/update', newData, {
       params: {
         type: currentUser.type
@@ -578,57 +585,21 @@ const CouponTable: React.FC = () => {
         alert("Atualizado com sucesso!!!");
         // refreshPage();
         refreshTable();
-    }).catch(err => alert(err.message)).finally(() => setOpenModal(false));
+    }).catch(err => alert(err.message)).finally(() => setIsLoading(false));
   }
-
-  function handleSearchChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const { value } = event.target;
-
-    setSearch(value);
-    // handleSearchClick();
-  }
-
-  function handleSearchClick() {
-    // if(search !== ""){
-    //   api.get('admin/getCouponList', {
-    //     params: {
-    //       value: search
-    //     }
-    //   }).then(res => {
-    //     setRow(res.data);
-    //   }).catch(err => console.log(err.message));
-    // }
-    alert(search);
-  }
-
 
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} ref={rootRef}>
       <h1 id="titlePage">Tabela de cupons</h1>
 
       <Paper className={classes.paper}>
-        {/* <TextField
-          id="search-input"
-          label="Pesquisar"
-          variant="filled"
-          color="secondary"
-          onChange={handleSearchChange}
-          value={search}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={handleSearchClick}>
-                  <MdSearch/>
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-          className={classes.marginSearch}
-        /> */}
-
+        {isLoading && <CircularProgress className={classes.loading} color="secondary" />}
+        <IconButton className={classes.refreshButton} onClick={refreshTable}>
+          <MdCached />
+        </IconButton>
         <TableContainer>
           <Table
             className={classes.table}
@@ -641,6 +612,8 @@ const CouponTable: React.FC = () => {
               orderBy={orderBy}
               onRequestSort={handleRequestSort}
               rowCount={rows.length}
+              refresh={refreshTable}
+              setIsLoading={(load: boolean) => setIsLoading(load)}
             />
             <TableBody>
               {stableSort(rows, getComparator(order, orderBy))
@@ -705,6 +678,7 @@ const CouponTable: React.FC = () => {
           BackdropProps={{
             timeout: 500,
           }}
+          container={() => rootRef.current}
         >
           <Fade in={openModal}>
             <div className={classes.container} id="modal">
@@ -851,6 +825,7 @@ const CouponTable: React.FC = () => {
           BackdropProps={{
             timeout: 500,
           }}
+          container={() => rootRef.current}
         >
           <Fade in={openDelModal}>
             <div className={classes.container}>
@@ -881,8 +856,6 @@ const CouponTable: React.FC = () => {
             </div>
           </Fade>
         </Modal>
-
-      {/* <CustomModal /> */}
     </div>
   );
 };

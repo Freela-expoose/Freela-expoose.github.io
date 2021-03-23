@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import { BrowserRouter, Route, Switch, useHistory } from 'react-router-dom';
 
 import Login from './pages/Login';
@@ -15,7 +15,7 @@ const Routes: React.FC = () => {
                 api.defaults.headers.Authorization = `Bearer ${token}`;
                 history.push('/dashboard');
             }
-    }, []);
+    }, [history]);
 
     return (
         <BrowserRouter>

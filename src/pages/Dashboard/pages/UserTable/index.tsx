@@ -1,36 +1,27 @@
 import React, {useEffect} from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
+import { MdDelete, MdAdd, MdSearch, MdCached } from 'react-icons/md';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import TablePagination from '@material-ui/core/TablePagination';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableSortLabel from '@material-ui/core/TableSortLabel';
+import IconButton from '@material-ui/core/IconButton';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
-import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Paper from '@material-ui/core/Paper';
-import { MdDelete, MdAdd, MdSearch } from 'react-icons/md';
-import Modal from '@material-ui/core/Modal';
-import Backdrop from '@material-ui/core/Backdrop';
-import Fade from '@material-ui/core/Fade';
-import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import IconButton from '@material-ui/core/IconButton'
+import TableRow from '@material-ui/core/TableRow';
+import Backdrop from '@material-ui/core/Backdrop';
+import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
+import Table from '@material-ui/core/Table';
+import Paper from '@material-ui/core/Paper';
+import Modal from '@material-ui/core/Modal';
+import Fade from '@material-ui/core/Fade';
 
 import './styles.css';
 import api from '../../../../services/api';
-
-
-
-// interface Data {
-//   calories: number;
-//   carbs: number;
-//   fat: number;
-//   name: string;
-//   protein: number;
-// }
 
 interface Data {
   _id: string;
@@ -38,32 +29,6 @@ interface Data {
   email: string;
   points: number;
 }
-
-// function createData(
-//   name: string,
-//   calories: number,
-//   fat: number,
-//   carbs: number,
-//   protein: number,
-// ): Data {
-//   return { name, calories, fat, carbs, protein };
-// }
-
-// const rows = [
-//   createData('Cupcake', 305, 3.7, 67, 4.3),
-//   createData('Donut', 452, 25.0, 51, 4.9),
-//   createData('Eclair', 262, 16.0, 24, 6.0),
-//   createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-//   createData('Gingerbread', 356, 16.0, 49, 3.9),
-//   createData('Honeycomb', 408, 3.2, 87, 6.5),
-//   createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-//   createData('Jelly Bean', 375, 0.0, 94, 0.0),
-//   createData('KitKat', 518, 26.0, 65, 7.0),
-//   createData('Lollipop', 392, 0.2, 98, 0.0),
-//   createData('Marshmallow', 318, 0, 81, 2.0),
-//   createData('Nougat', 360, 19.0, 9, 37.0),
-//   createData('Oreo', 437, 18.0, 63, 4.0),
-// ];
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -104,15 +69,6 @@ interface HeadCell {
   label: string;
   numeric: boolean;
 }
-
-
-// const headCells: HeadCell[] = [
-//   { id: 'name', numeric: false, disablePadding: false, label: 'Dessert (100g serving)' },
-//   { id: 'calories', numeric: true, disablePadding: false, label: 'Calories' },
-//   { id: 'fat', numeric: true, disablePadding: false, label: 'Fat (g)' },
-//   { id: 'carbs', numeric: true, disablePadding: false, label: 'Carbs (g)' },
-//   { id: 'protein', numeric: true, disablePadding: false, label: 'Protein (g)' },
-// ];
 
 const headCells: HeadCell[] = [
   { id: 'name', numeric: false, disablePadding: false, label: 'Nome' },
@@ -183,7 +139,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     table: {
       minWidth: 750,
-      
     },
     visuallyHidden: {
       border: 0,
@@ -222,6 +177,16 @@ const useStyles = makeStyles((theme: Theme) =>
 
     marginSearch: {
       margin: 8
+    },
+
+    loading: {
+      marginLeft: 12,
+      marginTop: 16
+    },
+
+    refreshButton: {
+      margin: 8,
+      float: 'right'
     }
 
   }),
@@ -233,25 +198,24 @@ const UserTable: React.FC = () => {
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('name');
   const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [openModal, setOpenModal] = React.useState<boolean>(false);
   const [currentRow, setCurrentRow] = React.useState<Data>({} as Data);
   const [modalType, setModalType] = React.useState<ModalType>('add');
+  const currentUser = JSON.parse(String(localStorage.getItem("@Expose:user")));
+  const token = localStorage.getItem("@Expose:token");
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [rows, setRow] = React.useState<Data[]>([] as Data[]);
   const [search, setSearch] = React.useState<string>("");
   let points = 0;
 
   const history = useHistory();
-  const currentUser = JSON.parse(String(localStorage.getItem("@Expose:user")));
-  const token = localStorage.getItem("@Expose:token");
 
 
   // TODO: Carregar todos os dados da lista
   useEffect(() => {
-    // console.log(api.defaults.headers.common['Authorization']);
     if(currentUser && token){
-      // console.log("Token",token)
+      setIsLoading(true);
       api.get('profile/getall', {
         params: {
           type: currentUser.type
@@ -265,14 +229,14 @@ const UserTable: React.FC = () => {
         }else {
           alert("Sem usuários")
         }
-      }).catch(err => alert(err.message));
+      }).catch(err => alert(err.message)).finally(() => setIsLoading(false));
     }else {
       history.push("/");
     }
-    
   }, []);
 
   const refreshTable = () => {
+    setIsLoading(true);
     api.get('profile/getall', {
       params: {
         type: currentUser.type
@@ -286,7 +250,7 @@ const UserTable: React.FC = () => {
       }else {
         alert("Sem usuários")
       }
-    }).catch(err => alert(err.message));
+    }).catch(err => alert(err.message)).finally(() => setIsLoading(false));
   }
 
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
@@ -294,7 +258,6 @@ const UserTable: React.FC = () => {
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
-
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -319,9 +282,9 @@ const UserTable: React.FC = () => {
     setOpenModal(true);
   }
 
-  function refreshPage() {
-    window.location.reload();
-  }
+  // function refreshPage() {
+  //   window.location.reload();
+  // }
 
   // TODO: Modal para adicionar pontos
   function handleModalAddPoint(rowData: Data){
@@ -332,7 +295,9 @@ const UserTable: React.FC = () => {
   }
 
   function handleDelete(){
-   if(currentUser && token){
+    setOpenModal(false);
+    if(currentUser && token){
+      setIsLoading(true);
       api.delete('profile/delete', {
         params: {
           email: currentRow.email,
@@ -345,13 +310,15 @@ const UserTable: React.FC = () => {
         alert(res.data.deleted + ' Deletado com sucesso!!!');
         // refreshPage();
         refreshTable();
-      } ).catch(err => alert(err.message)).finally(() => setOpenModal(false));
+      }).catch(err => alert(err.message)).finally(() => setIsLoading(false));
    }
   }
 
 
   function handleAddPoint(){
     // console.log(points);
+      setOpenModal(false);
+      setIsLoading(true);
       api.patch('points/update', {
         value: points,
         email: currentRow.email
@@ -364,7 +331,7 @@ const UserTable: React.FC = () => {
         alert('Adicionado com sucesso!!!');
         // refreshPage();
         refreshTable();
-      }).catch(err => alert(err.message)).finally(() => setOpenModal(false));
+      }).catch(err => alert(err.message)).finally(() => setIsLoading(false));
   }
 
   function handleSearchChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -375,16 +342,24 @@ const UserTable: React.FC = () => {
   }
 
   function handleSearchClick() {
-    // if(search !== ""){
-    //   api.get('admin/getCouponList', {
-    //     params: {
-    //       value: search
-    //     }
-    //   }).then(res => {
-    //     setRow(res.data);
-    //   }).catch(err => console.log(err.message));
-    // }
-    alert(search);
+    if(search !== ""){
+      setIsLoading(true);
+      api.get('profile/search', {
+        params: {
+          name: search,
+          type: currentUser.type
+        },
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      }).then(res => {
+        if(res.data.length){
+          setRow(res.data);
+        }else {
+          alert('Nada encontrado')
+        }
+      }).catch(err => console.log(err.message)).finally(() => setIsLoading(false));
+    }
   }
 
   function CustomModal(){
@@ -480,7 +455,7 @@ const UserTable: React.FC = () => {
     <div className={classes.root}>
       <h1 id="titlePage">Tabela dos usuários</h1>
       <Paper className={classes.paper} >
-        {/* <TextField
+          <TextField
             id="search-input"
             label="Pesquisar"
             variant="filled"
@@ -497,13 +472,19 @@ const UserTable: React.FC = () => {
               ),
             }}
             className={classes.marginSearch}
-          /> */}
+          />
+
+          {isLoading && <CircularProgress className={classes.loading} color="secondary" />}
+
+          <IconButton className={classes.refreshButton} onClick={refreshTable}>
+            <MdCached />
+          </IconButton>
 
         <TableContainer>
           <Table
             className={classes.table}
             aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
+            size="medium"
             aria-label="enhanced table"
           >
             <EnhancedTableHead
@@ -513,6 +494,7 @@ const UserTable: React.FC = () => {
               onRequestSort={handleRequestSort}
               rowCount={rows.length}
             />
+            
             <TableBody>
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -551,7 +533,7 @@ const UserTable: React.FC = () => {
                   );
                 })}
               {emptyRows > 0 && (
-                <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
+                <TableRow style={{ height: 53 * emptyRows }}>
                   <TableCell colSpan={6} />
                 </TableRow>
               )}
