@@ -288,7 +288,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                   </section>
 
                   <section>
-                    <TextField
+                    {/* <TextField
                       id="expireDate"
                       onChange={handleChangeFormData}
                       name="expireDate"
@@ -300,7 +300,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                       InputLabelProps={{
                         shrink: true,
                       }}             
-                    />
+                      fullWidth
+                    /> */}
 
                     <TextField
                       id="price"
@@ -316,6 +317,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                       InputLabelProps={{
                         shrink: true,
                       }}
+                      fullWidth
                     />
                   </section>
 
@@ -406,6 +408,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
     margin: {
       // display: 'inline-flex'
+      // flex: 1
     },
 
     marginSearch: {
@@ -627,7 +630,7 @@ const CouponTable: React.FC = () => {
                       <TableCell align="right">{row._id.substring(0, 12)+ "..."}</TableCell>
                       <TableCell align="right">{row.price}</TableCell>
                       <TableCell align="right">{String(row.expireDate).substring(8, 10) + "/" +  String(row.expireDate).substring(5, 7) + "/" +  String(row.expireDate).substring(0, 4)}</TableCell>
-                      <TableCell align="right">{row.isActive ? "Ativo" : "Inativo"}</TableCell>
+                      <TableCell align="right">{row.isActive ? "Ativo" : "Desativado"}</TableCell>
                       <TableCell align="right">
                         <button
                           className="custom-button yellow"
@@ -702,8 +705,6 @@ const CouponTable: React.FC = () => {
                         required
                         color="secondary"
                       />
-
-              
     
                       <div id="select-div">
                         <InputLabel id="select-label">Estado</InputLabel>
@@ -725,7 +726,7 @@ const CouponTable: React.FC = () => {
                     </div>
 
                     <div>
-                      <TextField
+                      {/* <TextField
                         id="expireDate"
                         onChange={handleChangeFormData}
                         name="expireDate"
@@ -739,7 +740,7 @@ const CouponTable: React.FC = () => {
                         InputLabelProps={{
                           shrink: true,
                         }}             
-                      />
+                      /> */}
 
                       <TextField
                         id="price"
@@ -756,6 +757,7 @@ const CouponTable: React.FC = () => {
                         InputLabelProps={{
                           shrink: true,
                         }}
+                        fullWidth
                       />
                     </div>
 

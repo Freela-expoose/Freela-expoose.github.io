@@ -331,7 +331,10 @@ const UserTable: React.FC = () => {
         alert('Adicionado com sucesso!!!');
         // refreshPage();
         refreshTable();
-      }).catch(err => alert(err.message)).finally(() => setIsLoading(false));
+      }).catch(err => alert(err.message)).finally(() => {
+        setIsLoading(false);
+        points = 0;
+      });
   }
 
   function handleSearchChange(event: React.ChangeEvent<HTMLInputElement>) {
