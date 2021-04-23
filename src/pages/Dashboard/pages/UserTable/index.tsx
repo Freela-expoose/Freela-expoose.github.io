@@ -229,7 +229,20 @@ const UserTable: React.FC = () => {
         }else {
           alert("Sem usuários")
         }
-      }).catch(err => alert(err.message)).finally(() => setIsLoading(false));
+      }).catch(err => {
+        if (err.response) {
+            // Request made and server responded
+            window.alert(err.response.data.message);
+        } else if (err.request) {
+            // The request was made but no response was received
+            console.log(err.request);
+            window.alert("Parece que houve um problema nos nossos servidores. Por favor aguarde um pouco e tente novamente.");
+        } else {
+            // Something happened in setting up the request that triggered an err
+            console.log('Error', err.message);
+            window.alert("Parece que houve um problema nos nossos servidores. Por favor aguarde um pouco e tente novamente.");
+        }
+      }).finally(() => setIsLoading(false));
     }else {
       history.push("/");
     }
@@ -250,7 +263,20 @@ const UserTable: React.FC = () => {
       }else {
         alert("Sem usuários")
       }
-    }).catch(err => alert(err.message)).finally(() => setIsLoading(false));
+    }).catch(err => {
+      if (err.response) {
+          // Request made and server responded
+          window.alert(err.response.data.message);
+      } else if (err.request) {
+          // The request was made but no response was received
+          console.log(err.request);
+          window.alert("Parece que houve um problema nos nossos servidores. Por favor aguarde um pouco e tente novamente.");
+      } else {
+          // Something happened in setting up the request that triggered an err
+          console.log('Error', err.message);
+          window.alert("Parece que houve um problema nos nossos servidores. Por favor aguarde um pouco e tente novamente.");
+      }
+    }).finally(() => setIsLoading(false));
   }
 
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
@@ -282,9 +308,6 @@ const UserTable: React.FC = () => {
     setOpenModal(true);
   }
 
-  // function refreshPage() {
-  //   window.location.reload();
-  // }
 
   // TODO: Modal para adicionar pontos
   function handleModalAddPoint(rowData: Data){
@@ -307,10 +330,23 @@ const UserTable: React.FC = () => {
           "Authorization": `Bearer ${token}`
         }
       }).then((res) => {
-        alert(res.data.deleted + ' Deletado com sucesso!!!');
+        alert('Deletado com sucesso!!!');
         // refreshPage();
         refreshTable();
-      }).catch(err => alert(err.message)).finally(() => setIsLoading(false));
+      }).catch(err => {
+        if (err.response) {
+            // Request made and server responded
+            window.alert(err.response.data.message);
+        } else if (err.request) {
+            // The request was made but no response was received
+            console.log(err.request);
+            window.alert("Parece que houve um problema nos nossos servidores. Por favor aguarde um pouco e tente novamente.");
+        } else {
+            // Something happened in setting up the request that triggered an err
+            console.log('Error', err.message);
+            window.alert("Parece que houve um problema nos nossos servidores. Por favor aguarde um pouco e tente novamente.");
+        }
+      }).finally(() => setIsLoading(false));
    }
   }
 
@@ -331,7 +367,20 @@ const UserTable: React.FC = () => {
         alert('Adicionado com sucesso!!!');
         // refreshPage();
         refreshTable();
-      }).catch(err => alert(err.message)).finally(() => {
+      }).catch(err => {
+        if (err.response) {
+            // Request made and server responded
+            window.alert(err.response.data.message);
+        } else if (err.request) {
+            // The request was made but no response was received
+            console.log(err.request);
+            window.alert("Parece que houve um problema nos nossos servidores. Por favor aguarde um pouco e tente novamente.");
+        } else {
+            // Something happened in setting up the request that triggered an err
+            console.log('Error', err.message);
+            window.alert("Parece que houve um problema nos nossos servidores. Por favor aguarde um pouco e tente novamente.");
+        }
+      }).finally(() => {
         setIsLoading(false);
         points = 0;
       });
@@ -361,7 +410,20 @@ const UserTable: React.FC = () => {
         }else {
           alert('Nada encontrado')
         }
-      }).catch(err => console.log(err.message)).finally(() => setIsLoading(false));
+      }).catch(err => {
+        if (err.response) {
+            // Request made and server responded
+            window.alert(err.response.data.message);
+        } else if (err.request) {
+            // The request was made but no response was received
+            console.log(err.request);
+            window.alert("Parece que houve um problema nos nossos servidores. Por favor aguarde um pouco e tente novamente.");
+        } else {
+            // Something happened in setting up the request that triggered an err
+            console.log('Error', err.message);
+            window.alert("Parece que houve um problema nos nossos servidores. Por favor aguarde um pouco e tente novamente.");
+        }
+      }).finally(() => setIsLoading(false));
     }
   }
 

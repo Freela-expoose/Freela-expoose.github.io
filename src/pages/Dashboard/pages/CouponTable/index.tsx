@@ -460,7 +460,20 @@ const CouponTable: React.FC = () => {
       setIsLoading(true);
       api.get<Data[]>('coupon/get').then(res => {
         setRow(res.data);
-      }).catch(err => alert(err.message)).finally(() => setIsLoading(false));
+      }).catch(err => {
+        if (err.response) {
+            // Request made and server responded
+            window.alert(err.response.data.message);
+        } else if (err.request) {
+            // The request was made but no response was received
+            console.log(err.request);
+            window.alert("Parece que houve um problema nos nossos servidores. Por favor aguarde um pouco e tente novamente.");
+        } else {
+            // Something happened in setting up the request that triggered an err
+            console.log('Error', err.message);
+            window.alert("Parece que houve um problema nos nossos servidores. Por favor aguarde um pouco e tente novamente.");
+        }
+      }).finally(() => setIsLoading(false));
     }else {
       history.push("/");
     }
@@ -543,7 +556,20 @@ const CouponTable: React.FC = () => {
     setIsLoading(true);
     api.get<Data[]>('coupon/get').then(res => {
       setRow(res.data);
-    }).catch(err => alert(err.message)).finally(() => setIsLoading(false));
+    }).catch(err => {
+      if (err.response) {
+          // Request made and server responded
+          window.alert(err.response.data.message);
+      } else if (err.request) {
+          // The request was made but no response was received
+          console.log(err.request);
+          window.alert("Parece que houve um problema nos nossos servidores. Por favor aguarde um pouco e tente novamente.");
+      } else {
+          // Something happened in setting up the request that triggered an err
+          console.log('Error', err.message);
+          window.alert("Parece que houve um problema nos nossos servidores. Por favor aguarde um pouco e tente novamente.");
+      }
+    }).finally(() => setIsLoading(false));
   }
 
   function handleDelete() {
@@ -560,7 +586,20 @@ const CouponTable: React.FC = () => {
       alert('Deletado com sucesso!!!');
       // refreshPage();
       refreshTable();
-    } ).catch(err => alert(err.message)).finally(() => setIsLoading(false));
+    } ).catch(err => {
+      if (err.response) {
+          // Request made and server responded
+          window.alert(err.response.data.message);
+      } else if (err.request) {
+          // The request was made but no response was received
+          console.log(err.request);
+          window.alert("Parece que houve um problema nos nossos servidores. Por favor aguarde um pouco e tente novamente.");
+      } else {
+          // Something happened in setting up the request that triggered an err
+          console.log('Error', err.message);
+          window.alert("Parece que houve um problema nos nossos servidores. Por favor aguarde um pouco e tente novamente.");
+      }
+    }).finally(() => setIsLoading(false));
   }
 
   function handleSubmitUpFormData() {
@@ -588,7 +627,20 @@ const CouponTable: React.FC = () => {
         alert("Atualizado com sucesso!!!");
         // refreshPage();
         refreshTable();
-    }).catch(err => alert(err.message)).finally(() => setIsLoading(false));
+    }).catch(err => {
+      if (err.response) {
+          // Request made and server responded
+          window.alert(err.response.data.message);
+      } else if (err.request) {
+          // The request was made but no response was received
+          console.log(err.request);
+          window.alert("Parece que houve um problema nos nossos servidores. Por favor aguarde um pouco e tente novamente.");
+      } else {
+          // Something happened in setting up the request that triggered an err
+          console.log('Error', err.message);
+          window.alert("Parece que houve um problema nos nossos servidores. Por favor aguarde um pouco e tente novamente.");
+      }
+    }).finally(() => setIsLoading(false));
   }
 
   const emptyRows =
